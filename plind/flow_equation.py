@@ -1,6 +1,28 @@
 import numpy as np
 
 def flow_eq(time, line, gradh, args=[]):
+    """
+    Flow_eq defines the flow equation used to solve for the trajectory of the contour.
+    It returns the component of the gradient of the Morse function perpendicular to the
+    contour. It does this by taking in a contour in the complax plane, projecting to the
+    Riemann sphere, computing the gradient, and then projecting back into the complex
+    plane.
+
+    Parameters
+    ----------
+    time: float
+
+    line: np.ndarray
+
+    gradh: func
+
+    args: array-like
+
+    Returns
+    -------
+    blah
+
+    """
     n = line.size//2
 
     u = line[:n]
@@ -21,7 +43,7 @@ def flow_eq(time, line, gradh, args=[]):
 
     # Compute gradient in (u, v) space, then project onto Riemann sphere
     # (grad is the slowest thing right now)
-    grad = gradh(u+1j*v, args)
+    grad = gradh(u+1j*v, *args)
 
     gradx = (2*(1-u**2+v**2)/denom**2 * grad.real) - (4*u*v/denom**2 * grad.imag)
     grady = (-4*u*v/denom**2 * grad.real) + (2*(1+u**2-v**2)/denom**2 * grad.imag)

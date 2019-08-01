@@ -12,36 +12,33 @@ class plmodel:
         self.contour = contour
         self.expfun = expfun
         self.grad = grad
-        self.expargs = []
+        self.expargs = expargs
 
         self.solution = solution()
         self.integral = None
         self.critpts = []
 
-
+    # Simple functions for retrieving attributes
     def get_contour(self):
         return self.contour
 
     def get_expfun(self):
         return self.expfun
 
-
     def get_solution(self):
         return self.solution
-
 
     def get_integral(self):
         return self.integral
 
-
     def get_critpts(self):
         return self.critpts
 
-
+    # Functions for getting things that are derived from the attributes
     def get_trajectory(self):
         pass
 
-    
+
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, args=self.expargs))."""
         def intfun(z, *args):
@@ -70,7 +67,8 @@ class plmodel:
         else:
             return self.grad
 
-
+            
+    # Functions for performing the PL integration
     def descend(self, start_time, end_time):
         gradh = self.get_grad()
         self.solution = solve_ivp(fun=lambda t, y: flow_eq(t, y, gradh, self.expargs), t_span=(start_time, end_time), y0=np.concatenate((self.contour.real, self.contour.imag)))
