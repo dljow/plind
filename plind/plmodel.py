@@ -3,7 +3,7 @@ from scipy.misc import derivative
 from scipy.integrate import solve_ivp
 from .solution import solution
 from .conintegrate import conintegrate
-from .flow_equation import flow_eq
+from .descend.flow_equation import flow_eq
 
 class plmodel:
     """some documentation."""
@@ -67,7 +67,7 @@ class plmodel:
         else:
             return self.grad
 
-            
+
     # Functions for performing the PL integration
     def descend(self, start_time, end_time):
         gradh = self.get_grad()
