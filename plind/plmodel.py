@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp
+
+from .integrate import conintegrate
+from .descend import flow_eq
 from .solution import solution
-from .conintegrate import conintegrate
-from .flow_equation import flow_eq
 
 class plmodel:
     """some documentation."""
@@ -60,14 +61,14 @@ class plmodel:
 
             def num_grad(z, *args):
                 gradRe = -derivative(lambda z: morse(z, *args), x0=z, dx=dx)
-                gradIm = derivative(lambda z: morse(z, *args), x0=z, dx=dx)
+                gradIm = derivative(lambda z: morse(z, *args), x0=z, dx=dx*1j)
                 return gradRe.real + 1j*gradIm.imag
 
             return num_grad
         else:
             return self.grad
 
-            
+
     # Functions for performing the PL integration
     def descend(self, start_time, end_time):
         gradh = self.get_grad()
