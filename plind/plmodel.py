@@ -9,6 +9,11 @@ from .solution import solution
 from .conintegrate import conintegrate
 from .descend.flow_equation import flow_eq
 
+class DescendError(Exception):
+     def __init__(self, value):
+         self.value = value
+     def __str__(self):
+         return repr(self.value)
 
 class plmodel:
     """some documentation."""
@@ -19,7 +24,7 @@ class plmodel:
         self.grad = grad
         self.expargs = expargs
 
-        self.solution = solution()
+        self.solution = None # Initialize to none, remind user to descend
         self.integral = None
         self.critpts = []
 
@@ -31,6 +36,8 @@ class plmodel:
         return self.expfun
 
     def get_solution(self):
+        if (self.solution== None):
+           raise DescendError("You must call descend() to get a solution")
         return self.solution
 
     def get_integral(self):
@@ -76,8 +83,8 @@ class plmodel:
     # Functions for performing the PL integration
     def descend(self, start_time, end_time):
         gradh = self.get_grad()
-        self.solution = solve_ivp(fun=lambda t, y: flow_eq(t, y, gradh, self.expargs), t_span=(start_time, end_time), y0=np.concatenate((self.contour.real, self.contour.imag)))
-        # self.contour = ? do something to get contour from solution
+        self.solution = solution(solve_ivp(fun=lambda t, y: flow_eq(t, y, gradh, self.expargs), t_span=(start_time, end_time), y0=np.concatenate((self.contour.real, self.contour.imag))))
+        self.contour = self.solution.get_contour()
 
 
     def integrate(self, Nint=1000):
