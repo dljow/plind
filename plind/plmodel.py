@@ -1,19 +1,16 @@
 import numpy as np
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp
-
 from .integrate import conintegrate
 from .descend import flow_eq
-
 from .solution import solution
-from .conintegrate import conintegrate
-from .descend.flow_equation import flow_eq
 
 class DescendError(Exception):
-     def __init__(self, value):
-         self.value = value
-     def __str__(self):
-         return repr(self.value)
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 class plmodel:
     """some documentation."""
@@ -24,7 +21,7 @@ class plmodel:
         self.grad = grad
         self.expargs = expargs
 
-        self.solution = None # Initialize to none, remind user to descend
+        self.solution = None  # Initialize to none, remind user to descend
         self.integral = None
         self.critpts = []
 
@@ -36,8 +33,8 @@ class plmodel:
         return self.expfun
 
     def get_solution(self):
-        if (self.solution== None):
-           raise DescendError("You must call descend() to get a solution")
+        if self.solution is None:
+            raise DescendError("You must call descend() to get a solution")
         return self.solution
 
     def get_integral(self):
@@ -48,7 +45,7 @@ class plmodel:
 
     # Functions for getting things that are derived from the attributes
     def get_trajectory(self):
-        pass
+        return self.solution.get_trajectory()
 
 
     def get_intfun(self):
