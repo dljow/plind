@@ -18,7 +18,7 @@ eps = np.finfo(float).eps
 # PARAMETERS TO DEFINE
 expfun = plfun.AiryWittenexp
 start_time = 0.0
-end_time = 0.1
+end_time = 0.6
 Npts = 100
 Nint = 1000
 
@@ -33,7 +33,7 @@ init_contour = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=
 
 # PARAMETERS TO DEFINE (!!!) #
 lamb = 1
-critpts = [-1j, 1j]
+critpts = [-1, 1]
 domain = [-5, 5]
 
 # Generate model and perform descent
@@ -43,6 +43,7 @@ plind.descend(start_time, end_time)
 line = plind.get_contour()
 trajectory = plind.get_trajectory()
 hfun = plind.get_morse()
+gradh = plind.get_grad()
 
 # Plot final contour and trajectory
 N = 100
@@ -64,8 +65,12 @@ for p0 in critpts:
     # Plot contours of expfun.imag passing through p0, p1
     ax.contour(u, v, expfun(z, lamb).imag, [expfun(p0, lamb).imag], colors='w', alpha=0.5)
 # Plot progress towards Lefschetz thimble
-for k in np.arange(1, trajectory.shape[0], trajectory.shape[0]//5):
+for k in np.linspace(0, trajectory.shape[0], trajectory.shape[0]//10, endpoint=False):
+    k = int(k)
     ax.plot(trajectory[k].real[1:-1], trajectory[k].imag[1:-1], 'ro-')
+
 # Plot final contour
+dn = 5
+# ax.quiver(u[::dn, ::dn], v[::dn, ::dn], gradh(z[::dn, ::dn], lamb).real, gradh(z[::dn, ::dn], lamb).imag, scale=140, color='k')
 ax.plot(line.real[1:-1], line.imag[1:-1], 'bo-')
 plt.show()

@@ -1,4 +1,4 @@
-
+import numpy as np
 
 class solution:
 
@@ -12,11 +12,17 @@ class solution:
 
     def get_trajectory(self):
         """Return the trajectory of the gradient descent at the time points specified by self.get_timepts()."""
-        return self.data.y
+        # convert trajectory returned by ivp into complex form
+        trajectory = self.data.y
+        len = int(trajectory.shape[0]/2)
+        trajectory = np.moveaxis(trajectory, -1, 0)
+        trajectory = trajectory[:, :len] + 1j * trajectory[:, len:2*len]
+        return trajectory
 
     def get_contour(self):
         """Return the last path of the trajectory (ie. hopefully the Lefshetz thimble)."""
-        return self.data.y[:, -1]
+        trajectory = self.get_trajectory()
+        return trajectory[-1, :]
 
     def get_ode_sol(self):
         """Return the OdeSolution instance provided by the solver."""
