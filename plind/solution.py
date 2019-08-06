@@ -5,55 +5,50 @@ class solution:
     def __init__(self, data):
         self.data = data
 
-## Useful things to get from the bunch object solution, plus a wrapper for the contour
+# Useful things to get from the bunch object solution, plus a wrapper for the contour
     def get_timepts(self):
-        """Return the time points at which the integrator evolved the 
-           gradient"""
+        """Return the time points at which the integrator evolved the gradient."""
         return self.data.t
 
     def get_trajectory(self):
-        """Return the trajectory of the gradient descent at the time points
-           specified by self.get_timepts()"""
+        """Return the trajectory of the gradient descent at the time points specified by self.get_timepts()."""
         return self.data.y
 
     def get_contour(self):
-        """Return the last path of the trajectory (ie. hopefully the
-           the Lefshetz thimble)"""
-
-        return self.data.y[:,-1]
+        """Return the last path of the trajectory (ie. hopefully the Lefshetz thimble)."""
+        return self.data.y[:, -1]
 
     def get_ode_sol(self):
-        """Returns the OdeSolution instance provided by the solver"""
-        return self.data.sol 
+        """Return the OdeSolution instance provided by the solver."""
+        return self.data.sol
 
-## Questionably useful stuff from the bunch object below this line:
+# Questionably useful stuff from the bunch object below this line:
     def get_t_events(self):
-        """Returns the t_events from the solver, that is, for each event
-           type a list of arrays at which an event of that type was detected"""
+        """Return the t_events from the solver, that is, for each event type a list of arrays at which an event of that type was detected."""
         return self.data.t_events
 
     def get_nfev(self):
-        """Returns the number of evaluations of the right-hand side"""
+        """Return the number of evaluations of the right-hand side."""
         return self.data.nfev
 
 
     def get_njacobev(self):
-         """Returns the number of evaluations of the Jacobian"""
-         return self.data.njev
+        """Return the number of evaluations of the Jacobian."""
+        return self.data.njev
 
     def get_nlu(self):
-        """Returns number of LU decompositions"""
+        """Return number of LU decompositions."""
         return self.data.nlu
 
     def get_status(self):
-       """Returns the status of the solver."""
-       return self.data.status
+        """Return the status of the solver."""
+        return self.data.status
 
- 
-    def get_message(self):
-        """Returns the solver message"""
+
+    def sget_message(self):
+        """Return the solver message."""
         return self.data.message
 
     def get_success(self):
-        """Returns a boolean describing if the solver succeeded"""      
-        return self.data.success 
+        """Return a boolean describing if the solver succeeded.s"""
+        return self.data.success
