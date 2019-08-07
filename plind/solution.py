@@ -1,4 +1,5 @@
 import numpy as np
+from __future__ import division
 
 class solution:
 
@@ -14,9 +15,9 @@ class solution:
         """Return the trajectory of the gradient descent at the time points specified by self.get_timepts()."""
         # convert trajectory returned by ivp into complex form
         trajectory = self.data.y
-        len = int(trajectory.shape[0]/2)
+        npts = (trajectory.shape[0]//2)
         trajectory = np.moveaxis(trajectory, -1, 0)
-        trajectory = trajectory[:, :len] + 1j * trajectory[:, len:2*len]
+        trajectory = trajectory[:, :npts] + 1j * trajectory[:, npts:2*npts]
         return trajectory
 
     def get_contour(self):
