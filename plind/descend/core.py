@@ -69,11 +69,13 @@ def flow_eq(time, line, gradh, args=[]):
     dydt = np.concatenate((fu,fv))
 
     return dydt
-def tot_speed(time, line, gradh, args=[], percentile=25):
+
+def tot_speed(time, line, gradh, term_frac_eval=0.25, args=[]):
     """
-    Computes the total speed for the slowest `percentile` percentile of points
+    Computes the total speed for the slowest `term_frac_eval` fraction of points
     """
 
+    percentile = term_frac_eval*100
     n = line.shape[0]//2
 
     dydt = flow_eq(time,line,gradh,args)
@@ -90,11 +92,11 @@ def tot_speed(time, line, gradh, args=[], percentile=25):
 
     return gradtot
 
-def terminal_cond(time, line, gradh, args=[], term_tol = np.inf, percentile = 25):
+def terminal_cond(time, line, gradh, term_tol = np.inf, term_frac_eval = 0.25, args=[]):
     """
     Terminal condition event tracker for solve_ivp. Whenever gradtot is slower than a set value, return 0.
     """
-    gradtot = tot_speed(time, line, gradh, args, percentile)
+    gradtot = tot_speed(time, line, gradh, term_frac_eval, args)
     if gradtot <= term_tol:
         return 0
     else:

@@ -3,7 +3,7 @@ from scipy.misc import derivative
 from scipy.integrate import solve_ivp
 
 from .integrate import conintegrate
-from .descend import flow_eq
+from .descend import *
 
 from .solution import solution
 
@@ -15,10 +15,14 @@ class plmodel:
         self.expfun = expfun
         self.grad = grad
         self.expargs = expargs
+        if np.shape(self.expargs) == ():
+            self.expargs = [self.expargs]
 
         self.solution = solution()
         self.integral = None
         self.critpts = []
+
+        self._dimsize = np.shape(self.contour)
 
     # Simple functions for retrieving attributes
     def get_contour(self):
@@ -38,7 +42,7 @@ class plmodel:
 
     # Functions for getting things that are derived from the attributes
     def get_trajectory(self):
-        pass
+        return self.trajectory
 
 
     def get_intfun(self):
@@ -70,13 +74,32 @@ class plmodel:
             return self.grad
 
 
-    # Functions for performing the PL integration
-    def descend(self, start_time, end_time):
-        gradh = self.get_grad()
-        self.solution = solve_ivp(fun=lambda t, y: flow_eq(t, y, gradh, self.expargs), t_span=(start_time, end_time), y0=np.concatenate((self.contour.real, self.contour.imag)))
-        # self.contour = ? do something to get contour from solution
 
+    # Functions for performing the PL integration
+    def descend(self, start_time, end_time, term_frac_eval = 0.25, term_percent = 0.1):
+        gradh = self.get_grad()
+        y0 = np.concatenate((self.contour.real, self.contour.imag))
+        init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
+        term_tol = init_speed*term_percent
+        flow = lambda t, y: flow_eq(t, y, gradh, self.expargs)
+        term_cond = lambda t, y: terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
+        term_cond.terminal = True
+
+        self.solution = solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method = 'BDF', vectorized = 'True')
+
+        # time steps
+        self._t = self.solution.t # time steps
+
+        # stopping time, if exists
+        self._t_events = self.solution.t_events
+
+        # trajectory in returned form
+        self._y = self.solution.y
+        self.trajectory = self._y[:self._dimsize[0]] + 1j*self._y[self._dimsize[0]:2*self._dimsize[0]]
+
+        #get the last contour of the trajectory
+        self.contour = self.trajectory[...,-1]
 
     def integrate(self, Nint=1000):
-        intfun = self.get_intfun()
-        self.integral = conintegrate(lambda z: intfun(z, *self.expargs), self.contour, Nint=Nint)
+        self.intfun = self.get_intfun()
+        self.integral = conintegrate(lambda z: self.intfun(z, *self.expargs), self.contour, Nint=Nint)
