@@ -90,7 +90,7 @@ class plmodel:
         term_cond = lambda t, y: terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
         term_cond.terminal = True
 
-        self.solution = solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method = 'BDF', vectorized = 'True')
+        self.solution = solution(solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method = 'BDF', vectorized = 'True'))
         self.contour = self.solution.get_contour()
 
     def integrate(self, Nint=1000):
