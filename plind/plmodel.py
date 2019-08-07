@@ -2,7 +2,7 @@ import numpy as np
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp
 from .integrate import conintegrate
-from .descend import flow_eq
+from .descend import *
 from .solution import solution
 
 class DescendError(Exception):
@@ -20,6 +20,8 @@ class plmodel:
         self.expfun = expfun
         self.grad = grad
         self.expargs = expargs
+        if np.shape(self.expargs) == ():
+            self.expargs = [self.expargs]
 
         self.solution = None  # Initialize to none, remind user to descend
         self.integral = None
@@ -77,13 +79,20 @@ class plmodel:
             return self.grad
 
 
+
     # Functions for performing the PL integration
-    def descend(self, start_time, end_time):
+    def descend(self, start_time, end_time, term_frac_eval = 0.25, term_percent = 0.1):
         gradh = self.get_grad()
-        self.solution = solution(solve_ivp(fun=lambda t, y: flow_eq(t, y, gradh, self.expargs), t_span=(start_time, end_time), y0=np.concatenate((self.contour.real, self.contour.imag))))
+        y0 = np.concatenate((self.contour.real, self.contour.imag))
+        init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
+        term_tol = init_speed*term_percent
+        flow = lambda t, y: flow_eq(t, y, gradh, self.expargs)
+        term_cond = lambda t, y: terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
+        term_cond.terminal = True
+
+        self.solution = solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method = 'BDF', vectorized = 'True')
         self.contour = self.solution.get_contour()
 
-
     def integrate(self, Nint=1000):
-        intfun = self.get_intfun()
-        self.integral = conintegrate(lambda z: intfun(z, *self.expargs), self.contour, Nint=Nint)
+        self.intfun = self.get_intfun()
+        self.integral = conintegrate(lambda z: self.intfun(z, *self.expargs), self.contour, Nint=Nint)

@@ -2,7 +2,7 @@
 # conintegrate.py - performs contour integral
 import numpy as np
 from scipy.interpolate import splprep, splev
-from scipy.integrate import simps, quadrature
+from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
 
 #def conintegrate(f, line, args=[], Nint=1000):
@@ -16,7 +16,7 @@ from ..projection import *
 #    integral = simps(f(pts, *args)*deriv, x=param_grid)
 #    return integral
 
-def conintegrate(f, line, args=[]):
+def conintegrate(f, line, args=[], Nint=1000):
     pts = plane_to_sphere(line)
     tck, u = splprep(pts, s=0)
 
