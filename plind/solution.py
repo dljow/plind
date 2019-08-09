@@ -57,5 +57,5 @@ class solution:
         return self.data.message
 
     def get_success(self):
-        """Return a boolean describing if the solver succeeded.s"""
+        """Return a boolean describing if the solver succeeds."""
         return self.data.success

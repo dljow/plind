@@ -36,12 +36,12 @@ def flow_eq(time, line, gradh, args=[]):
     z = (u**2+v**2-1)/denom
 
     # Compute tangent vector in 3D
-    dx = (np.concatenate([x[1:],x[:1]]) - np.concatenate([x[-1:],x[:-1]]))/2
-    dy = (np.concatenate([y[1:],y[:1]]) - np.concatenate([y[-1:],y[:-1]]))/2
-    dz = (np.concatenate([z[1:],z[:1]]) - np.concatenate([z[-1:],z[:-1]]))/2
+    dx = (np.concatenate([x[1:], x[:1]]) - np.concatenate([x[-1:], x[:-1]]))/2
+    dy = (np.concatenate([y[1:], y[:1]]) - np.concatenate([y[-1:], y[:-1]]))/2
+    dz = (np.concatenate([z[1:], z[:1]]) - np.concatenate([z[-1:], z[:-1]]))/2
 
     # Compute gradient in (u, v) space, then project onto Riemann sphere
-    #grad is the slowest thing right now
+    # grad is the slowest thing right now
     grad = gradh(u+1j*v, *args)
 
     gradx = 2*(1-u**2+v**2) /denom**2 * grad.real - 4*u*v           /denom**2 * grad.imag
@@ -66,24 +66,21 @@ def flow_eq(time, line, gradh, args=[]):
     fu *= (1-time)**(-2)
     fv *= (1-time)**(-2)
 
-    dydt = np.concatenate((fu,fv))
+    dydt = np.concatenate((fu, fv))
 
     return dydt
 
 def tot_speed(time, line, gradh, term_frac_eval=0.25, args=[]):
-    """
-    Computes the total speed for the slowest `term_frac_eval` fraction of points
-    """
-
+    """Compute the total speed for the slowest `term_frac_eval` fraction of points."""
     percentile = term_frac_eval*100
     n = line.shape[0]//2
 
-    dydt = flow_eq(time,line,gradh,args)
+    dydt = flow_eq(time, line, gradh, args)
 
     dudt = dydt[:n]
     dvdt = dydt[n:2*n]
 
-    slowest = (dudt**2+dvdt**2) < np.percentile((dudt**2+dvdt**2),percentile)
+    slowest = (dudt**2+dvdt**2) < np.percentile((dudt**2+dvdt**2), percentile)
 
     dudt = dudt[slowest]
     dvdt = dvdt[slowest]
@@ -92,7 +89,7 @@ def tot_speed(time, line, gradh, term_frac_eval=0.25, args=[]):
 
     return gradtot
 
-def terminal_cond(time, line, gradh, term_tol = np.inf, term_frac_eval = 0.25, args=[]):
+def terminal_cond(time, line, gradh, term_tol=np.inf, term_frac_eval=0.25, args=[]):
     """
     Terminal condition event tracker for solve_ivp. Whenever gradtot is slower than a set value, return 0.
     """
