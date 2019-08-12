@@ -1,4 +1,5 @@
 import numpy as np
+from ..projection import *
 
 def flow_eq(time, line, gradh, args=[]):
     """
@@ -31,9 +32,7 @@ def flow_eq(time, line, gradh, args=[]):
     eps = np.finfo(float).eps  # machine epsilon
     denom = 1+u**2+v**2
 
-    x = 2*u/denom
-    y = 2*v/denom
-    z = (u**2+v**2-1)/denom
+    x, y, z = plane_to_sphere(u+1j*v)
 
     # Compute tangent vector in 3D
     dx = (np.concatenate([x[1:], x[:1]]) - np.concatenate([x[-1:], x[:-1]]))/2
@@ -44,9 +43,7 @@ def flow_eq(time, line, gradh, args=[]):
     # grad is the slowest thing right now
     grad = gradh(u+1j*v, *args)
 
-    gradx = 2*(1-u**2+v**2) /denom**2 * grad.real - 4*u*v           /denom**2 * grad.imag
-    grady = -4*u*v          /denom**2 * grad.real + 2*(1+u**2-v**2) /denom**2 * grad.imag
-    gradz = 4*u             /denom**2 * grad.real + 4*v             /denom**2 * grad.imag
+    gradx, grady, gradz = plane_to_sphere_vec(u+1j*v, grad)
 
     # Compute the perpendicular component of the gradient
     mag = (gradx*dx + grady*dy + gradz*dz)/(dx**2+dy**2+dz**2)
@@ -56,11 +53,10 @@ def flow_eq(time, line, gradh, args=[]):
 
 
     # Project back onto the complex plane
-    gradperpu = gradperpx / (1-z+eps) + gradperpz * x / (1-z+eps)**2
-    gradperpv = gradperpy / (1-z+eps) + gradperpz * y / (1-z+eps)**2
+    gradperp = sphere_to_plane_vec([x,y,z], [gradperpx,gradperpy,gradperpz])
 
-    fu = gradperpu
-    fv = gradperpv
+    fu = gradperp.real
+    fv = gradperp.imag
 
     # Change of variable ( t -> s/(1-s) ) to integrate to infinite time in finite parameter
     fu *= (1-time)**(-2)
