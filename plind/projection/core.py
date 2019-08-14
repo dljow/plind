@@ -2,6 +2,8 @@
 # projection.py - projects from complex plane to riemann sphere and vice-versa.
 import numpy as np
 
+eps = np.finfo(float).eps
+
 def plane_to_sphere(z):
     """
     Project a point from the complex plane to the Riemann sphere, embedded in R^3
@@ -56,8 +58,8 @@ def sphere_to_plane_vec(pt, vec):
     X, Y, Z = pt[0], pt[1], pt[2]
     vec_X, vec_Y, vec_Z = vec[0], vec[1], vec[2]
 
-    vec_u = vec_X/(1-Z) + vec_Z * X/(1-Z)**2
-    vec_v = vec_Y/(1-Z) + vec_Z * Y/(1-Z)**2
+    vec_u = vec_X/(1-Z+eps) + vec_Z * X/(1-Z+eps)**2
+    vec_v = vec_Y/(1-Z+eps) + vec_Z * Y/(1-Z+eps)**2
 
     vec_z = vec_u + 1j * vec_v
     return vec_z
@@ -121,4 +123,3 @@ def cyl_to_plane_vec(pt, vec):
 
     vec_z = vec_u + 1j * vec_v
     return vec_z
-
