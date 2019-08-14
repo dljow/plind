@@ -16,18 +16,12 @@ from ..projection import *
 #    integral = simps(f(pts, *args)*deriv, x=param_grid)
 #    return integral
 
-def conintegrate(f, line, args=[], Nint=1000):
-    pts = plane_to_sphere(line)
-    tck, u = splprep(pts, s=0)
+def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=200):
+    integrand_R = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).real
+    integrand_I = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).imag
 
-    line_map = lambda x: sphere_to_plane(splev(x, tck))
-    line_tan = lambda x: sphere_to_plane_vec(splev(x, tck), splev(x, tck, der=1))
-
-    integrand_R = lambda x: ( f(line_map(x), *args) * line_tan(x) ).real
-    integrand_I = lambda x: ( f(line_map(x), *args) * line_tan(x) ).imag
-
-    result_R = fixed_quad(integrand_R, u[0], u[-1], n=200)
-    result_I = fixed_quad(integrand_I, u[0], u[-1], n=200)
+    result_R = integrator(integrand_R, spline_param[0], spline_param[-1], n=Nint)
+    result_I = integrator(integrand_I, spline_param[0], spline_param[-1], n=Nint)
 
     integral_R = result_R[0]
     error_R = result_R[1]

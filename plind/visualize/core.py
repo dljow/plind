@@ -1,9 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
 from ..plmodel import plmodel
 
-def visualize_descent(plmodel=plmodel, domain = [-5,5], lognorm = False):
+def visualize_descent(plmodel=plmodel, domain = [-5,5], norm = None):
     morsefun = plmodel.get_morse()
     expfun = plmodel.expfun
     trajectory = plmodel.get_trajectory()
@@ -27,7 +26,7 @@ def visualize_descent(plmodel=plmodel, domain = [-5,5], lognorm = False):
     ax.set_ylim(domain[0], domain[1])
     ax.set_xlim(domain[0], domain[1])
     # Plot h
-    im = ax.pcolormesh(U, V, morsefun(Z, expargs))
+    im = ax.pcolormesh(U, V, morsefun(Z, expargs), norm=norm)
     fig.colorbar(im, ax=ax)
     for p0 in critpts:
         # Plot critical points

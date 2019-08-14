@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.misc import derivative
-from scipy.integrate import solve_ivp
+from scipy.integrate import solve_ivp, simps, quad, quadrature, fixed_quad
 from .integrate import conintegrate
+from .interpolate import *
 from .descend import *
 from .solution import solution
 
@@ -49,6 +50,8 @@ class plmodel:
     def get_trajectory(self):
         return self.solution.get_trajectory()
 
+    def get_contour_spline(self):
+        return spline1d(self.contour)
 
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, args=self.expargs))."""
@@ -96,6 +99,9 @@ class plmodel:
         self.solution = solution(solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method='BDF', vectorized='True'))
         self.contour = self.solution.get_contour()
 
-    def integrate(self, Nint=1000):
+    def integrate(self, integrator=fixed_quad, Nint=200):
         self.intfun = self.get_intfun()
-        self.integral = conintegrate(lambda z: self.intfun(z, *self.expargs), self.contour, Nint=Nint)
+        self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
+
+        intfun_wrapped = lambda z: self.intfun(z, *self.expargs)
+        self.integral = conintegrate(intfun_wrapped, self.contour_spline, self.contour_spline_der, self.contour_spline_param, integrator, Nint=Nint)
