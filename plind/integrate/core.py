@@ -17,6 +17,27 @@ from ..projection import *
 #    return integral
 
 def conintegrate(f, line, args=[], Nint=1000):
+    """ Integrates the function f over the manifold line.
+    Parameters
+    ----------
+    f: function
+       the function to be integrated.  
+
+    line: np.ndarray
+         the manifold to integrate the function over.
+ 
+    args: array-like (optional)
+         the arguments to the gradient of the Morse function, if needed. 
+  
+    Nint: integer (optional)
+         (!!!) CURRENTLY DOES NOTHING
+
+    Returns
+    -------
+    dydt: np.ndarray
+        the perpendicular gradient at all the points in line. """
+
+
     pts = plane_to_sphere(line)
     tck, u = splprep(pts, s=0)
 
