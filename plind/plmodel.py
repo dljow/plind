@@ -48,7 +48,11 @@ class plmodel:
 
     # Functions for getting things that are derived from the attributes
     def get_trajectory(self):
-        return self.solution.get_trajectory()
+        if solution is None:
+            print("Run .descend before getting trajectory.")
+            return None
+        else:
+            return self.solution.get_trajectory()
 
     def get_contour_spline(self):
         return spline1d(self.contour)
