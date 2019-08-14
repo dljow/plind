@@ -26,7 +26,7 @@ def visualize_descent(plmodel=plmodel, domain = [-5,5], norm = None):
     ax.set_ylim(domain[0], domain[1])
     ax.set_xlim(domain[0], domain[1])
     # Plot h
-    im = ax.pcolormesh(U, V, morsefun(Z, expargs), norm=norm)
+    im = ax.pcolormesh(U, V, morsefun(Z, *expargs), norm=norm)
     fig.colorbar(im, ax=ax)
     for p0 in critpts:
         # Plot critical points
