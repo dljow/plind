@@ -26,8 +26,8 @@ def conintegrate(f, line, args=[], Nint=1000):
     integrand_R = lambda x: ( f(line_map(x), *args) * line_tan(x) ).real
     integrand_I = lambda x: ( f(line_map(x), *args) * line_tan(x) ).imag
 
-    result_R = quadrature(integrand_R, u[0], u[-1])
-    result_I = quadrature(integrand_I, u[0], u[-1])
+    result_R = fixed_quad(integrand_R, u[0], u[-1], n=200)
+    result_I = fixed_quad(integrand_I, u[0], u[-1], n=200)
 
     integral_R = result_R[0]
     error_R = result_R[1]
