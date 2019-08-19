@@ -16,7 +16,7 @@ from ..projection import *
 #    integral = simps(f(pts, *args)*deriv, x=param_grid)
 #    return integral
 
-def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=200):
+def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=400):
     """ Integrates the function f over the manifold line.
     Parameters
     ----------
