@@ -1,7 +1,6 @@
-<<<<<<< HEAD
-*.pdf
-*.png
-=======
+# mac stuff
+.DS_Store
+
 # renders
 *.png
 *.pdf
@@ -130,5 +129,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
->>>>>>> origin/solver

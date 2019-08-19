@@ -16,21 +16,27 @@ from ..projection import *
 #    integral = simps(f(pts, *args)*deriv, x=param_grid)
 #    return integral
 
-def conintegrate(f, line, args=[], Nint=1000):
+def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=200):
     """ Integrates the function f over the manifold line.
     Parameters
     ----------
     f: function
        the function to be integrated.  
 
-    line: np.ndarray
+    contour_spline: np.ndarray
          the manifold to integrate the function over.
+
+    contour_spline_der: np.ndarray
+         the derivative of the contour spline
  
-    args: array-like (optional)
-         the arguments to the gradient of the Morse function, if needed. 
-  
+    spline_param: array-like 
+         the arguments to Morse function, if needed. 
+     
+    integrator: function (optional)
+         the integrator to us
+
     Nint: integer (optional)
-         (!!!) CURRENTLY DOES NOTHING
+         number of points to integrate over
 
     Returns
     -------
@@ -38,17 +44,11 @@ def conintegrate(f, line, args=[], Nint=1000):
         the perpendicular gradient at all the points in line. """
 
 
-    pts = plane_to_sphere(line)
-    tck, u = splprep(pts, s=0)
+    integrand_R = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).real
+    integrand_I = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).imag
 
-    line_map = lambda x: sphere_to_plane(splev(x, tck))
-    line_tan = lambda x: sphere_to_plane_vec(splev(x, tck), splev(x, tck, der=1))
-
-    integrand_R = lambda x: ( f(line_map(x), *args) * line_tan(x) ).real
-    integrand_I = lambda x: ( f(line_map(x), *args) * line_tan(x) ).imag
-
-    result_R = quadrature(integrand_R, u[0], u[-1])
-    result_I = quadrature(integrand_I, u[0], u[-1])
+    result_R = integrator(integrand_R, spline_param[0], spline_param[-1], n=Nint)
+    result_I = integrator(integrand_I, spline_param[0], spline_param[-1], n=Nint)
 
     integral_R = result_R[0]
     error_R = result_R[1]
