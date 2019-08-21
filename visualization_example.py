@@ -16,7 +16,7 @@ eps = np.finfo(float).eps
 # ------------------------------------------------------------------------------
 
 # PARAMETERS TO DEFINE
-expfun = plfun.AiryWittenexp
+expfun = plfun.Airyexp
 start_time = 0.0
 end_time = 0.6
 Npts = 100
