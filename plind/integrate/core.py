@@ -16,7 +16,34 @@ from ..projection import *
 #    integral = simps(f(pts, *args)*deriv, x=param_grid)
 #    return integral
 
-def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=200):
+def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=400):
+    """ Integrates the function f over the manifold line.
+    Parameters
+    ----------
+    f: function
+       the function to be integrated.  
+
+    contour_spline: np.ndarray
+         the manifold to integrate the function over.
+
+    contour_spline_der: np.ndarray
+         the derivative of the contour spline
+ 
+    spline_param: array-like 
+         the arguments to Morse function, if needed. 
+     
+    integrator: function (optional)
+         the integrator to us
+
+    Nint: integer (optional)
+         number of points to integrate over
+
+    Returns
+    -------
+    dydt: np.ndarray
+        the perpendicular gradient at all the points in line. """
+
+
     integrand_R = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).real
     integrand_I = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).imag
 

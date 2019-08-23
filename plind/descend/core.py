@@ -2,28 +2,30 @@ import numpy as np
 from ..projection import *
 
 def flow_eq(time, line, gradh, args=[]):
-    """
-    Flow_eq defines the flow equation used to solve for the trajectory of the contour.
+    """    Flow_eq defines the flow equation used to solve for the trajectory of the contour.
     It returns the component of the gradient of the Morse function perpendicular to the
-    contour. It does this by taking in a contour in the complax plane, projecting to the
+    contour. It does this by taking in a contour in the complex plane, projecting to the
     Riemann sphere, computing the gradient, and then projecting back into the complex
     plane.
 
     Parameters
     ----------
     time: float
-
+         the time at which the gradient is requested. 
+         
     line: np.ndarray
-
+         the manifold to flow along the gradient.
+ 
     gradh: func
+         the gradient of the Morse function h.
 
-    args: array-like
+    args: array-like (optional)
+         the arguments to the gradient of the Morse function, if needed. 
 
     Returns
     -------
-    blah
-
-    """
+    dydt: np.ndarray
+        the perpendicular gradient at all the points in line. """
     n = line.shape[0]//2
 
     u = line[:n]
@@ -86,8 +88,7 @@ def tot_speed(time, line, gradh, term_frac_eval=0.25, args=[]):
     return gradtot
 
 def terminal_cond(time, line, gradh, term_tol=np.inf, term_frac_eval=0.25, args=[]):
-    """
-    Terminal condition event tracker for solve_ivp. Whenever gradtot is slower than a set value, return 0.
+    """Terminal condition event tracker for solve_ivp. Whenever gradtot is slower than a set value, return 0.
     """
     gradtot = tot_speed(time, line, gradh, term_frac_eval, args)
     if gradtot <= term_tol:
