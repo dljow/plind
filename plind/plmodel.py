@@ -24,7 +24,7 @@ class plmodel:
         self.solution = None  # Initialize to none, remind user to descend
         self.integral = None
         self.critpts = []
-        self.poles= [] # Identifies regions of the contour that may contain poles.
+        self.poles = [] # Identifies regions of the contour that may contain poles.
 
     # Simple functions for retrieving attributes
     def get_contour(self):
