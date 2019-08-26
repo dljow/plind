@@ -57,7 +57,7 @@ class plmodel:
 
     def get_poles(self):
         """Identifies parts of the domain that may be poles."""
-        return self.poles, self.intfun(poles, *self.expargs)
+        return self.poles, self.intfun(self.poles, *self.expargs)
 
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, args=self.expargs))."""

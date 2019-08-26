@@ -9,6 +9,7 @@ sys.path.append("..")
 
 import unittest
 from plind.plmodel import *
+from plind.plexception.plexception import *
 import pl_testfunctions as plfun
 import numpy as np
 import time
@@ -53,14 +54,34 @@ class TestPoleFlagging(unittest.TestCase):
 	# Tests that given a contour to integrate over specifically containing a
 	# pole to make sure it is flagged. 
             expfun = lambda x: 1j*(1/(1+x))
-            contour = np.linspace(-10, 10, 20)
+            contour = np.linspace(-10, 10, 21)
+            print(contour)
             model = plmodel(contour, expfun)
             try:
                 model.integrate()
                 ans=model.get_integral()
+                print(ans)
             except PoleError:
                 poles, vals= model.get_poles()
-                self.assertTrue(-1 in poles)
+                self.assertTrue(-1.- poles[0]< 10**-10)
+
+        def test_flag_pole(self):
+        # Tests that x^2/2 +1/(1+x^2) is properly flagged 
+            expfun= lambda x: x**2/2+(1/(1+x**2))
+            contour= np.linspace(-10,-10, 20)
+            model=plmodel(contour, expfun)
+            try:
+                model.descend(0, 0.61)
+                model.integrate()
+                ans=model.get_integral()
+            except PoleError:
+                poles, vals= model.get_poles()
+                self.assertTrue(1j in poles)
+                model.descend(0, 0.61)
+                model.integrate()
+                ans=model.get_integral()
+                print(ans)
+
 
 if __name__ == '__main__':
         unittest.main()
