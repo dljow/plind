@@ -21,17 +21,17 @@ def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator
     Parameters
     ----------
     f: function
-       the function to be integrated.  
+       the function to be integrated.
 
     contour_spline: np.ndarray
          the manifold to integrate the function over.
 
     contour_spline_der: np.ndarray
          the derivative of the contour spline
- 
-    spline_param: array-like 
-         the arguments to Morse function, if needed. 
-     
+
+    spline_param: array-like
+         the arguments to Morse function, if needed.
+
     integrator: function (optional)
          the integrator to us
 
@@ -40,7 +40,8 @@ def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator
 
     Returns
     -------
-    dydt: np.ndarray
+    dydt: np.ndarray.3
+    
         the perpendicular gradient at all the points in line. """
 
 
