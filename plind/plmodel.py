@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp, simps, quad, quadrature, fixed_quad
-from .plexception import * 
+from .plexception.plexception import * 
 from .integrate import conintegrate
 from .poles import *
 from .interpolate import *
@@ -57,7 +57,7 @@ class plmodel:
 
     def get_poles(self):
         """Identifies parts of the domain that may be poles."""
-        return self.poles, self.intfun(poles, *self.expargs)
+        return self.poles, self.intfun(self.poles, *self.expargs)
 
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, args=self.expargs))."""
@@ -110,7 +110,7 @@ class plmodel:
 
         # Identify poles:
         xvals= self.contour_spline(self.contour_spline_param)
-        eval= self.intfun(xvals, *self.expargs)
+        eval= self.expfun(xvals, *self.expargs)
 
         if np.sum((abs(eval)> DIVERGE))> 0:
                 self.poles=xvals[(abs(eval)> DIVERGE)]
