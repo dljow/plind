@@ -1,7 +1,7 @@
 import numpy as np
 from ..projection import *
 
-def flow_eq(time, line, gradh, args=[]):
+def flow_eq(time, line, gradh, args=[], anchor=[]):
     """    Flow_eq defines the flow equation used to solve for the trajectory of the contour.
     It returns the component of the gradient of the Morse function perpendicular to the
     contour. It does this by taking in a contour in the complex plane, projecting to the
@@ -11,16 +11,16 @@ def flow_eq(time, line, gradh, args=[]):
     Parameters
     ----------
     time: float
-         the time at which the gradient is requested. 
-         
+         the time at which the gradient is requested.
+
     line: np.ndarray
          the manifold to flow along the gradient.
- 
+
     gradh: func
          the gradient of the Morse function h.
 
     args: array-like (optional)
-         the arguments to the gradient of the Morse function, if needed. 
+         the arguments to the gradient of the Morse function, if needed.
 
     Returns
     -------
@@ -59,6 +59,9 @@ def flow_eq(time, line, gradh, args=[]):
 
     fu = gradperp.real
     fv = gradperp.imag
+    # set velocity of anchor to 0
+    fu[anchor] = 0.0
+    fv[anchor] = 0.0
 
     # Change of variable ( t -> s/(1-s) ) to integrate to infinite time in finite parameter
     fu *= (1-time)**(-2)

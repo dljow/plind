@@ -1,14 +1,14 @@
 import numpy as np
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp, simps, quad, quadrature, fixed_quad
-from .plexception.plexception import * 
+from .plexception import *
 from .integrate import conintegrate
 from .poles import *
 from .interpolate import *
 from .descend import *
 from .solution import solution
 
-DIVERGE= 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles. 
+DIVERGE= 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles.
 
 class plmodel:
     """some documentation."""
@@ -24,7 +24,7 @@ class plmodel:
         self.solution = None  # Initialize to none, remind user to descend
         self.integral = None
         self.critpts = []
-        self.poles= [] # Identifies regions of the contour that may contain poles. 
+        self.poles = [] # Identifies regions of the contour that may contain poles.
 
     # Simple functions for retrieving attributes
     def get_contour(self):
@@ -88,14 +88,14 @@ class plmodel:
             return self.grad
 
     # Functions for performing the PL integration
-    def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1):
+    def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1, anchor=[]):
         gradh = self.get_grad()
         y0 = np.concatenate((self.contour.real, self.contour.imag))
         init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
         term_tol = init_speed*term_percent
 
         def flow(t, y):
-            return flow_eq(t, y, gradh, self.expargs)
+            return flow_eq(t, y, gradh, self.expargs, anchor=anchor)
 
         def term_cond(t, y):
             return terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
@@ -109,14 +109,12 @@ class plmodel:
         self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
 
         # Identify poles:
-        xvals= self.contour_spline(self.contour_spline_param)
-        eval= self.expfun(xvals, *self.expargs)
+        xvals = self.contour_spline(self.contour_spline_param)
+        eval = self.intfun(xvals, *self.expargs)
 
-        if np.sum((abs(eval)> DIVERGE))> 0:
-                self.poles=xvals[(abs(eval)> DIVERGE)]
+        if np.sum((abs(eval) > DIVERGE)) > 0:
+                self.poles = xvals[(abs(eval) > DIVERGE)]
                 raise PoleError("Poles were identified in the interpolated contour. Check self.poles.")
 
         intfun_wrapped = lambda z: self.intfun(z, *self.expargs)
         self.integral = conintegrate(intfun_wrapped, self.contour_spline, self.contour_spline_der, self.contour_spline_param, integrator, Nint=Nint)
-
-
