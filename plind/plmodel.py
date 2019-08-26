@@ -88,14 +88,14 @@ class plmodel:
             return self.grad
 
     # Functions for performing the PL integration
-    def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1):
+    def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1, anchor=[]):
         gradh = self.get_grad()
         y0 = np.concatenate((self.contour.real, self.contour.imag))
         init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
         term_tol = init_speed*term_percent
 
         def flow(t, y):
-            return flow_eq(t, y, gradh, self.expargs)
+            return flow_eq(t, y, gradh, self.expargs, anchor=anchor)
 
         def term_cond(t, y):
             return terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
