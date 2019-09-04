@@ -79,7 +79,9 @@ class plmodel:
 
             morse_grad = egrad(morse)
             def auto_grad(z, *args):
-                return morse_grad(z, *args)
+                #gradRe = np.real(morse_grad(z, *args))
+                #gradIm = np.imag(morse_grad(z, *args))
+                return -np.conj(morse_grad(z,*args))
 
             return auto_grad
         else:
