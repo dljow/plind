@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # conintegrate.py - performs contour integral
-import numpy as np
+import autograd.numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
@@ -17,8 +17,8 @@ from ..projection import *
 #    return integral
 
 def conintegrate(f, contour_spline, contour_spline_der, spline_param, integrator=fixed_quad, Nint=200):
-    integrand_R = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).real
-    integrand_I = lambda x: ( f(contour_spline(x)) * contour_spline_der(x) ).imag
+    integrand_R = lambda x: np.real( f(contour_spline(x)) * contour_spline_der(x) )
+    integrand_I = lambda x: np.imag( f(contour_spline(x)) * contour_spline_der(x) )
 
     result_R = integrator(integrand_R, spline_param[0], spline_param[-1], n=Nint)
     result_I = integrator(integrand_I, spline_param[0], spline_param[-1], n=Nint)

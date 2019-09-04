@@ -1,4 +1,5 @@
-import numpy as np
+import autograd.numpy as np
+from autograd import elementwise_grad as egrad
 from scipy.misc import derivative
 from scipy.integrate import solve_ivp, simps, quad, quadrature, fixed_quad
 from .integrate import conintegrate
@@ -67,7 +68,7 @@ class plmodel:
     def get_morse(self):
         """Return the morse function, i.e. the real part of expfun."""
         def morse(z, *args):
-            return self.expfun(z, *args).real
+            return np.real(self.expfun(z, *args))
         return morse
 
 
@@ -76,12 +77,11 @@ class plmodel:
         if self.grad is None:
             morse = self.get_morse()
 
-            def num_grad(z, *args):
-                gradRe = -derivative(lambda z: morse(z, *args), x0=z, dx=dx)
-                gradIm = derivative(lambda z: morse(z, *args), x0=z, dx=dx*1j)
-                return gradRe.real + 1j*gradIm.imag
+            morse_grad = egrad(morse)
+            def auto_grad(z, *args):
+                return morse_grad(z, *args)
 
-            return num_grad
+            return auto_grad
         else:
             return self.grad
 
