@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # projection.py - projects from complex plane to riemann sphere and vice-versa.
-import numpy as np
+import autograd.numpy as np
 
 eps = np.finfo(float).eps
 

@@ -1,4 +1,4 @@
-import numpy as np
+import autograd.numpy as np
 from ..projection import *
 
 def flow_eq(time, line, gradh, args=[], anchor=[]):
