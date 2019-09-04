@@ -104,8 +104,12 @@ class plmodel:
         self.solution = solution(solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method='BDF', vectorized='True', events=term_cond))
         self.contour = self.solution.get_contour()
 
-    def integrate(self, integrator=fixed_quad, Nint=200):
-        self.intfun = self.get_intfun()
+    def integrate(self, integrator=fixed_quad, Nint=200, intfun=None):
+        if intfun is None:
+            self.intfun = self.get_intfun()
+        else:
+            self.intfun = intfun
+            
         self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
 
         # Identify poles:
