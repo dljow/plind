@@ -8,6 +8,7 @@ from .poles import *
 from .interpolate import *
 from .descend import *
 from .solution import solution
+from .contour import *
 
 DIVERGE= 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles.
 
@@ -111,7 +112,7 @@ class plmodel:
             self.intfun = self.get_intfun()
         else:
             self.intfun = intfun
-            
+
         self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
 
         # Identify poles:
