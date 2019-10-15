@@ -4,6 +4,7 @@
 
 import numpy as np
 from plind.plmodel import plmodel
+from plind.contour import *
 import pl_testfunctions as plfun
 import matplotlib.pyplot as plt
 
@@ -22,7 +23,8 @@ end_time = 0.6
 Npts = 100
 Nint = 1000
 
-init_contour = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
+init_points = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
+init_contour = contour(points=init_points)
 
 # ------------------------------------------------------------------------------
 # Detailed Contour Convergence for a given lambda.
@@ -40,7 +42,7 @@ domain = [-5, 5]
 plind = plmodel(init_contour, expfun, expargs=[lamb])
 plind.descend(start_time, end_time)
 
-line = plind.get_contour()
+line = plind.get_contour().points
 trajectory = plind.get_trajectory()
 hfun = plind.get_morse()
 gradh = plind.get_grad()

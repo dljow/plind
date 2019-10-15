@@ -10,7 +10,7 @@ from .descend import *
 from .solution import solution
 from .contour import *
 
-DIVERGE= 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles.
+DIVERGE = 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles.
 
 class plmodel:
     """some documentation."""
@@ -55,7 +55,7 @@ class plmodel:
             return self.solution.get_trajectory()
 
     def get_contour_spline(self):
-        return spline1d(self.contour)
+        return spline1d(self.contour.points)
 
     def get_poles(self):
         """Identifies parts of the domain that may be poles."""
@@ -93,7 +93,7 @@ class plmodel:
     # Functions for performing the PL integration
     def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1, anchor=[]):
         gradh = self.get_grad()
-        y0 = np.concatenate((self.contour.real, self.contour.imag))
+        y0 = np.concatenate((self.contour.points.real, self.contour.points.imag))
         init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
         term_tol = init_speed*term_percent
 
@@ -105,7 +105,7 @@ class plmodel:
         term_cond.terminal = True
 
         self.solution = solution(solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method='BDF', vectorized='True', events=term_cond))
-        self.contour = self.solution.get_contour()
+        self.contour.points = self.solution.get_contour()
 
     def integrate(self, integrator=fixed_quad, Nint=200, intfun=None):
         if intfun is None:

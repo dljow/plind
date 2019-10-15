@@ -3,10 +3,10 @@ from scipy.spatial import Delaunay
 
 class contour:
 
-    def __init__(self):
-        self.points = np.array([])
-        self.edges = np.array([[]])
-        self.simplices = np.array([[]])
+    def __init__(self, points=np.array([]), edges=np.array([[]]), simplices=np.array([[]])):
+        self.points = points
+        self.edges = edges
+        self.simplices = simplices
 
     # Function that initializes contour based on list of points
     def init_contour(self, points):
@@ -37,4 +37,5 @@ class contour:
     def remove_points(self, bad_points):
         pass
 
-    
+def fb():
+    pass
