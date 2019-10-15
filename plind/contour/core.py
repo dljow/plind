@@ -29,13 +29,14 @@ class contour:
     def get_edgelengths(self):
         pass
 
-    # Function to refine edges
-    def refine_edges(self, bad_edges):
+    # Function to split edges in half
+    def split_edges(self, bad_edges):
         pass
 
     # Function to remove points
     def remove_points(self, bad_points):
         pass
 
-def fb():
-    pass
+    # Function to refine edges
+    def refine_edges(self, delta):
+        pass
