@@ -52,6 +52,11 @@ class TestContour(unittest.TestCase):
     self.assertTrue([0,2,4] in new_simplices)
     self.assertTrue([1,3,4] in new_simplices)
 
+    # Check the appropriate components have been removed
+    self.assertTrue([0,3] not in new_edges)
+    self.assertTrue([0,1,3] not in new_simplices)
+    self.assertTrue([0,2,3] not in new_simplices)
+
   def test_remove_points(self):
     self.assertTrue(False)
 

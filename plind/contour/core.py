@@ -17,7 +17,7 @@ class contour:
 
         # Extract all possible edge pairs from tesselation
         edges = np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]])
-        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pairs
+        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pair python list remove list of lists        
         edges.sort(axis=1)  # put all pairs in ascending order
         edges = np.unique(edges, axis=0)  # remove duplicates
 
@@ -27,8 +27,8 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
-        differences = (self.points[self.edges][:,0] - self.points[self.edges][:,1])
-        return np.sqrt(differences[:,0]**2+differences[:,1]**2)
+        differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
+        return np.sqrt(differences[:, 0]**2+differences[:, 1]**2)
 
 
     def find_peak(self, simplex, edge):
@@ -36,48 +36,57 @@ class contour:
             if point not in edge:
                  return point
 
+    # Reindexes simplicers or edges given a list of bad_points that will be removed
+    def rm_reindex(self, arr, bad_points):
+        arr = arr - np.array([sum(i > k for k in bad_points) for i in arr.flatten()]).reshape(arr.shape)
+        return arr
+
+
     # Function to split edges in half
     def split_edges(self, bad_edges):
         for edge in bad_edges:
-           p0, p1= self.points[edge]
-           mid=(p0+p1)/2
-           simplices_to_change= []
+            index = np.where(np.all(edge==self.edges, axis=1))
+            self.edges=np.delete(self.simplices, index, axis=1)
 
-           # for loop can probably be made more efficient
-           for simplex in self.simplices:
-              if (edge[0] in simplex) and (edge[1] in simplex):
-                simplices_to_change.append(simplex)
+            # calculate midpoint
+            p0, p1 = self.points[edge]
+            mid = (p0+p1)/2
+            simplices_to_change = []
 
-           if (len(simplices_to_change) >2):
-              print("too many simplices")
-              return
+            # relevant simplices:
+            # (!!!) for loop can probably be made more efficient
+            for simplex in self.simplices:
+                if (edge[0] in simplex) and (edge[1] in simplex):
+                    simplices_to_change.append(simplex)
+            if (len(simplices_to_change) >2):
+               print("too many simplices")
+               return
+ 
+            # add points
+            self.points= np.append(self.points,[mid], axis=0)
+            mid_ind = np.shape(self.points)[0]-1
 
-           # add points
-           self.points= np.append(self.points,[mid], axis=0)
+            # add edges, simplices
+            for simplex in simplices_to_change:
+               # remove old simplex
+               simplex.tolist()
+               index= np.where(np.all(simplex==self.simplices,axis=1))
+               self.simplices = np.delete(self.simplices, index, axis=0)
 
-           # add edges, simplices
-           for simplex in simplices_to_change:
-              # add simplices
-              simplex.tolist()
-              newsimps= self.simplices.tolist()
-              print(newsimps)
-              print(simplex)
-              ind_out= newsimps.index(simplex)
-              newsimps.pop(ind_out)
-
-              simp_peak= self.find_peak(simplex, edge)
-              others= simplex.copy()
-              others.remove(simp_peak)
-              s1=[simp_peak, mid, others[0]]
-              s1.sort()
-              s2= [simp_peak, mid, others[1]]
-              s2.sort()
-              newsimps.append(s1)
-              newsimps.append(s2)
+               # add simplices
+               simp_peak= self.find_peak(simplex, edge)
+               others= simplex.copy().tolist()
+               others.remove(simp_peak)
+               s1=[simp_peak, mid_ind, others[0]]
+               s1.sort()
+               s2= [simp_peak, mid_ind, others[1]]
+               s2.sort()
               
-              self.simplices=np.array(newsimps)
-              # add edges
-              self.edges= np.append(self.edges, [[simp_peak,np.shape(self.points)[1]-1]], axis=0)
+               self.simplices=np.append(self.simplices, [s1], axis=0)
+               self.simplices=np.append(self.simplices,	[s2], axis=0)
+
+               # add edges
+               self.edges= np.append(self.edges, [[simp_peak,mid_ind]], axis=0)
 
               
                
@@ -86,16 +95,19 @@ class contour:
     def remove_points(self, bad_points):
         bad_edges = np.unique(np.array(np.where(np.isin(self.edges, bad_points)))[0])
         bad_simplices = np.unique(np.array(np.where(np.isin(self.simplices, bad_points)))[0])
-        self.points = np.delete(self.points, bad_points)
-        self.edges = np.delete(self.edges, bad_edges)
-        self.simplices = np.delete(self.simplices, bad_simplices)
-        pass
+        # remove bad edges and simplices
+        self.points = np.delete(self.points, bad_points, axis=0)
+        self.edges = np.delete(self.edges, bad_edges, axis=0)
+        self.simplices = np.delete(self.simplices, bad_simplices, axis=0)
+        # relable points
+        self.edges = self.rm_reindex(self.edges, bad_points)
+        self.simplices = self.rm_reindex(self.simplices, bad_points)
 
     # Function to refine edges
     def refine_edges(self, delta):
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
-        bad_edges= edges[lengths > delta]
+        bad_edges = edges[lengths > delta]
         self.split_edges(bad_edges)
 
         # identify poles, remove
