@@ -1,15 +1,14 @@
 import autograd.numpy as np
 from autograd import elementwise_grad as egrad
-from scipy.misc import derivative
-from scipy.integrate import solve_ivp, simps, quad, quadrature, fixed_quad
+from scipy.integrate import solve_ivp, fixed_quad
 from .plexception import *
 from .integrate import conintegrate
 from .poles import *
 from .interpolate import *
 from .descend import *
-from .solution import solution
+from .contour import *
 
-DIVERGE= 10**9 # Divergence threshold. functions that evaluate to higher than this are considered poles.
+DIVERGE = 10**9  # Divergence threshold. functions that evaluate to higher than this are considered poles.
 
 class plmodel:
     """some documentation."""
@@ -22,10 +21,11 @@ class plmodel:
         if np.shape(self.expargs) == ():
             self.expargs = [self.expargs]
 
-        self.solution = None  # Initialize to none, remind user to descend
+        self.ndim = contour.simplices.shape[1]-1  # ndim = number of vertices in simplex minus 1
+        self.trajectory = np.array([contour])
         self.integral = None
         self.critpts = []
-        self.poles = [] # Identifies regions of the contour that may contain poles.
+        self.poles = []   # Identifies regions of the contour that may contain poles.
 
     # Simple functions for retrieving attributes
     def get_contour(self):
@@ -33,11 +33,6 @@ class plmodel:
 
     def get_expfun(self):
         return self.expfun
-
-    def get_solution(self):
-        if self.solution is None:
-            raise DescendError("You must call .descend to get a solution")
-        return self.solution
 
     def get_integral(self):
         return self.integral
@@ -47,14 +42,10 @@ class plmodel:
 
     # Functions for getting things that are derived from the attributes
     def get_trajectory(self):
-        if solution is None:
-            raise DescendError("You must call .descend to get a solution")
-            return None
-        else:
-            return self.solution.get_trajectory()
+        return self.trajectory
 
-    def get_contour_spline(self):
-        return spline1d(self.contour)
+    # def get_contour_spline(self):
+    #    return spline1d(self.contour.points)
 
     def get_poles(self):
         """Identifies parts of the domain that may be poles."""
@@ -80,47 +71,53 @@ class plmodel:
             morse = self.get_morse()
 
             morse_grad = egrad(morse)
+
             def auto_grad(z, *args):
-                #gradRe = np.real(morse_grad(z, *args))
-                #gradIm = np.imag(morse_grad(z, *args))
-                return -np.conj(morse_grad(z,*args))
+                # gradRe = np.real(morse_grad(z, *args))
+                # gradIm = np.imag(morse_grad(z, *args))
+                return -np.conj(morse_grad(z, *args))
 
             return auto_grad
         else:
             return self.grad
 
     # Functions for performing the PL integration
-    def descend(self, start_time, end_time, term_frac_eval=0.25, term_percent=0.1, anchor=[]):
+    def descend(self, dt, Nstep, delta):
         gradh = self.get_grad()
-        y0 = np.concatenate((self.contour.real, self.contour.imag))
-        init_speed = tot_speed(start_time, y0, gradh, term_frac_eval, self.expargs)
-        term_tol = init_speed*term_percent
 
-        def flow(t, y):
-            return flow_eq(t, y, gradh, self.expargs, anchor=anchor)
+        i = 0
+        while i < Nstep:
+            # perform euler
+            self.contour.points = flow(self.contour.points, dt)  # perform euler pushing
 
-        def term_cond(t, y):
-            return terminal_cond(t, y, gradh, term_tol, term_frac_eval, self.expargs)
-        term_cond.terminal = True
+            # remove points
+            bad_points = []  # find the points to remove
+            self.contour.remove_points(bad_points)
 
-        self.solution = solution(solve_ivp(fun=flow, t_span=(start_time, end_time), y0=y0, method='BDF', vectorized='True', events=term_cond))
-        self.contour = self.solution.get_contour()
+            # refine mesh
+            self.contour.refine_edges(delta)
 
+            # add new contour to trajectory
+            self.trajectory = np.append(self.trajectory, self.contour)
+
+            i += 1
+
+    # Function for integrating over contour
     def integrate(self, integrator=fixed_quad, Nint=200, intfun=None):
         if intfun is None:
             self.intfun = self.get_intfun()
         else:
             self.intfun = intfun
-            
-        self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
 
-        # Identify poles:
-        xvals = self.contour_spline(self.contour_spline_param)
-        eval = self.intfun(xvals, *self.expargs)
-
-        if np.sum((abs(eval) > DIVERGE)) > 0:
-                self.poles = xvals[(abs(eval) > DIVERGE)]
-                raise PoleError("Poles were identified in the interpolated contour. Check self.poles.")
-
-        intfun_wrapped = lambda z: self.intfun(z, *self.expargs)
-        self.integral = conintegrate(intfun_wrapped, self.contour_spline, self.contour_spline_der, self.contour_spline_param, integrator, Nint=Nint)
+        # self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
+        #
+        # # Identify poles:
+        # xvals = self.contour_spline(self.contour_spline_param)
+        # eval = self.intfun(xvals, *self.expargs)
+        #
+        # if np.sum((abs(eval) > DIVERGE)) > 0:
+        #         self.poles = xvals[(abs(eval) > DIVERGE)]
+        #         raise PoleError("Poles were identified in the interpolated contour. Check self.poles.")
+        #
+        # intfun_wrapped = lambda z: self.intfun(z, *self.expargs)
+        # self.integral = conintegrate(intfun_wrapped, self.contour_spline, self.contour_spline_der, self.contour_spline_param, integrator, Nint=Nint)

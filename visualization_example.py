@@ -4,6 +4,7 @@
 
 import numpy as np
 from plind.plmodel import plmodel
+from plind.contour import *
 import pl_testfunctions as plfun
 import matplotlib.pyplot as plt
 
@@ -22,7 +23,8 @@ end_time = 0.6
 Npts = 100
 Nint = 1000
 
-init_contour = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
+init_points = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
+c0 = contour(points=init_points)
 
 # ------------------------------------------------------------------------------
 # Detailed Contour Convergence for a given lambda.
@@ -37,10 +39,10 @@ critpts = [-1, 1]
 domain = [-5, 5]
 
 # Generate model and perform descent
-plind = plmodel(init_contour, expfun, expargs=[lamb])
-plind.descend(start_time, end_time)
+plind = plmodel(c0, expfun, expargs=[lamb])
+plind.descend(1e-3, 100, 1)
 
-line = plind.get_contour()
+line = plind.get_contour().points
 trajectory = plind.get_trajectory()
 hfun = plind.get_morse()
 gradh = plind.get_grad()
@@ -67,7 +69,7 @@ for p0 in critpts:
 # Plot progress towards Lefschetz thimble
 for k in np.linspace(0, trajectory.shape[0], trajectory.shape[0]//10, endpoint=False):
     k = int(k)
-    ax.plot(trajectory[k].real[1:-1], trajectory[k].imag[1:-1], 'ro-')
+    ax.plot(trajectory[k].points.real[1:-1], trajectory[k].points.imag[1:-1], 'ro-')
 
 # Plot final contour
 dn = 5
