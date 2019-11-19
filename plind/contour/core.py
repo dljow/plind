@@ -40,10 +40,15 @@ class contour:
            for simplex in self.simplices:
               if (edge[0] in simplex) and (edge[1] in simplex):
                 simplices_to_change.append(simplex)
-   
+
 
     # Function to remove points
     def remove_points(self, bad_points):
+        bad_edges = np.unique(np.array(np.where(np.isin(self.edges, bad_points)))[0])
+        bad_simplices = np.unique(np.array(np.where(np.isin(self.simplices, bad_points)))[0])
+        self.points = np.delete(self.points, bad_points)
+        self.edges = np.delete(self.edges, bad_edges)
+        self.simplices = np.delete(self.simplices, bad_simplices)
         pass
 
     # Function to refine edges
