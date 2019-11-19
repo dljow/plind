@@ -27,23 +27,23 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
-        differences = (self.points[self.edges][:,0] - self.points[self.edges][:,1])
-        return np.sqrt(differences[:,0]**2+differences[:,1]**2)
+        differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
+        return np.sqrt(differences[:, 0]**2+differences[:, 1]**2)
 
     # Function to split edges in half
     def split_edges(self, bad_edges):
         for edge in bad_edges:
-            p0, p1= self.points[edge]
-            mid=(p0+p1)/2
-            simplices_to_change= []
+            p0, p1 = self.points[edge]
+            mid = (p0+p1)/2
+            simplices_to_change = []
 
-           # for loop can probably be made more efficient
-           for simplex in self.simplices:
-               if (edge[0] in simplex) and (edge[1] in simplex):
-                   simplices_to_change.append(simplex)
-           if (simplices_to_change.size >2):
-               print("too many simplices")
-               return
+            # for loop can probably be made more efficient
+            for simplex in self.simplices:
+                if (edge[0] in simplex) and (edge[1] in simplex):
+                    simplices_to_change.append(simplex)
+            if (simplices_to_change.size > 2):
+                print("too many simplices")
+                return
 
     # Reindexes simplicers or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
@@ -66,7 +66,7 @@ class contour:
     def refine_edges(self, delta):
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
-        bad_edges= edges[lengths > delta]
+        bad_edges = edges[lengths > delta]
         self.split_edges(bad_edges)
 
         # identify poles, remove
