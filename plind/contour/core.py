@@ -17,7 +17,7 @@ class contour:
 
         # Extract all possible edge pairs from tesselation
         edges = np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]])
-        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pair python list remove list of lists        
+        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pair python list remove list of lists
         edges.sort(axis=1)  # put all pairs in ascending order
         edges = np.unique(edges, axis=0)  # remove duplicates
 
@@ -27,8 +27,9 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
+        ndim = self.points.shape[1]
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-        return np.sqrt(differences[:, 0]**2+differences[:, 1]**2)
+        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, ndim)], 0))
 
 
     def find_peak(self, simplex, edge):
@@ -61,7 +62,7 @@ class contour:
             if (len(simplices_to_change) >2):
                print("too many simplices")
                return
- 
+
             # add points
             self.points= np.append(self.points,[mid], axis=0)
             mid_ind = np.shape(self.points)[0]-1
@@ -81,7 +82,7 @@ class contour:
                s1.sort()
                s2= [simp_peak, mid_ind, others[1]]
                s2.sort()
-              
+
                self.simplices=np.append(self.simplices, [s1], axis=0)
                self.simplices=np.append(self.simplices,	[s2], axis=0)
 
@@ -89,8 +90,8 @@ class contour:
                self.edges= np.append(self.edges, [[simp_peak,mid_ind]], axis=0)
                self.edges= np.append(self.edges, [[edge[0], mid_ind]], axis=0)
                self.edges= np.append(self.edges, [[edge[1], mid_ind]], axis=0)
-              
-               
+
+
 
     # Function to remove points
     def remove_points(self, bad_points):
@@ -114,4 +115,3 @@ class contour:
         # identify poles, remove
         bad_points = []
         self.remove_points(bad_points)
-        
