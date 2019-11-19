@@ -6,8 +6,18 @@ from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
 
 def conintegrate(f, contour, args=[]):
+    int = 0
     for simp in contour.simplices:
         mid = np.sum(contour.points[simp], 0)/len(simp)
+        # compute volume element (this is very janky and not general at all)
+        [p0, p1, p2] = contour.points[simp]
+        base = abs(p1-p0)
+        mid_pt = (p1+p0)/2
+        height = abs(p2-mid_pt)
+        vol = 0.5*base*height
+
+        int += f(mid, *args)*vol
+    return vol
 
 #def conintegrate(f, line, args=[], Nint=1000):
 #    pts = p.plane_to_sphere(line)
