@@ -30,6 +30,12 @@ class contour:
         differences = (self.points[self.edges][:,0] - self.points[self.edges][:,1])
         return np.sqrt(differences[:,0]**2+differences[:,1]**2)
 
+
+    def find_peak(self, simplex, edge):
+        for point in simplex:
+            if point not in edge:
+                 return point
+
     # Function to split edges in half
     def split_edges(self, bad_edges):
         for edge in bad_edges:
@@ -42,10 +48,40 @@ class contour:
               if (edge[0] in simplex) and (edge[1] in simplex):
                 simplices_to_change.append(simplex)
 
-           if (simplices_to_change.size >2):
+           if (len(simplices_to_change) >2):
               print("too many simplices")
               return
-  
+
+           # add points
+           self.points= np.append(self.points,[mid], axis=0)
+
+           # add edges, simplices
+           for simplex in simplices_to_change:
+              # add simplices
+              simplex.tolist()
+              newsimps= self.simplices.tolist()
+              print(newsimps)
+              print(simplex)
+              ind_out= newsimps.index(simplex)
+              newsimps.pop(ind_out)
+
+              simp_peak= self.find_peak(simplex, edge)
+              others= simplex.copy()
+              others.remove(simp_peak)
+              s1=[simp_peak, mid, others[0]]
+              s1.sort()
+              s2= [simp_peak, mid, others[1]]
+              s2.sort()
+              newsimps.append(s1)
+              newsimps.append(s2)
+              
+              self.simplices=np.array(newsimps)
+              # add edges
+              self.edges= np.append(self.edges, [[simp_peak,np.shape(self.points)[1]-1]], axis=0)
+
+              
+               
+
     # Function to remove points
     def remove_points(self, bad_points):
         bad_edges = np.unique(np.array(np.where(np.isin(self.edges, bad_points)))[0])
