@@ -27,19 +27,23 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
-        return np.norm(self.points[edges][:,0] - self.points[edges][:,1])
+        differences = (self.points[self.edges][:,0] - self.points[self.edges][:,1])
+        return np.sqrt(differences[:,0]**2+differences[:,1]**2)
 
     # Function to split edges in half
     def split_edges(self, bad_edges):
         for edge in bad_edges:
            p0, p1= self.points[edge]
            mid=(p0+p1)/2
-           simplices_tochange= []
+           simplices_to_change= []
 
            # for loop can probably be made more efficient
            for simplex in self.simplices:
               if (edge[0] in simplex) and (edge[1] in simplex):
                 simplices_to_change.append(simplex)
+           if (simplices_to_change.size >2):
+              print("too many simplices")
+              return
    
 
     # Function to remove points
