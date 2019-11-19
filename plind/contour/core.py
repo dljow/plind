@@ -10,11 +10,7 @@ class contour:
 
     # Function that initializes contour based on list of points
     def init_contour(self, points):
-<<<<<<< HEAD
-        """Return a Delaunay tesselation of a set of points, in the form of simplices referring to the indices of the set points, and edges with the same indices. The edges have no repeats."""
-=======
-        """Return a Delaunay tesselation of a set of points, in the form ofsimplices referring to the indices of the set points, and edges with the same indices. The edges have no repeats."""
->>>>>>> e51737a1a4f68e0439ab0dbd3f5f485ccc614d42
+        """Return a Delaunay tesselation of a set of points, in the form of simplices referring to the indices of the set points, and edges with the same indices. The edges have no repeats"""
         # Use Delaunay tesselation to get points
         tri = Delaunay(points)
         simplices = tri.simplices
@@ -31,7 +27,6 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
-<<<<<<< HEAD
         return np.norm(self.points[edges][:,0] - self.points[edges][:,1])
 
     # Function to split edges in half
@@ -46,15 +41,6 @@ class contour:
               if (edge[0] in simplex) and (edge[1] in simplex):
                 simplices_to_change.append(simplex)
    
-           
-
-=======
-        pass
-
-    # Function to split edges in half
-    def split_edges(self, bad_edges):
->>>>>>> e51737a1a4f68e0439ab0dbd3f5f485ccc614d42
-        pass
 
     # Function to remove points
     def remove_points(self, bad_points):
@@ -62,8 +48,6 @@ class contour:
 
     # Function to refine edges
     def refine_edges(self, delta):
-<<<<<<< HEAD
-
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
         bad_edges= edges[lengths > delta]
@@ -73,6 +57,3 @@ class contour:
         bad_points = []
         self.remove_points(bad_points)
         # (!!!) add here
-=======
-        pass
->>>>>>> e51737a1a4f68e0439ab0dbd3f5f485ccc614d42
