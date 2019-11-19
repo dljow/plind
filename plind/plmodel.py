@@ -88,7 +88,7 @@ class plmodel:
         i = 0
         while i < Nstep:
             # perform euler
-            self.contour.points = flow(self.contour.points, dt)  # perform euler pushing
+            self.contour.points = flow(self.contour.points, gradh, dt)  # perform euler pushing
 
             # remove points
             bad_points = []  # find the points to remove

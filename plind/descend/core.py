@@ -1,9 +1,9 @@
 import autograd.numpy as np
 from ..projection import *
 
-def flow(points, dt):
+def flow(points, gradh, dt):
     # performs Euler time step
-    return points
+    return points+gradh(points)*dt
 
 
 # def flow_eq(time, line, gradh, args=[], anchor=[]):
