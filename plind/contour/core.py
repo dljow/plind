@@ -17,7 +17,7 @@ class contour:
 
         # Extract all possible edge pairs from tesselation
         edges = np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]])
-        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pairs
+        edges = np.reshape(edges, [int(edges.size/2), 2])  # reshape to pair python list remove list of lists        
         edges.sort(axis=1)  # put all pairs in ascending order
         edges = np.unique(edges, axis=0)  # remove duplicates
 
@@ -30,25 +30,67 @@ class contour:
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
         return np.sqrt(differences[:, 0]**2+differences[:, 1]**2)
 
-    # Function to split edges in half
-    def split_edges(self, bad_edges):
-        for edge in bad_edges:
-            p0, p1 = self.points[edge]
-            mid = (p0+p1)/2
-            simplices_to_change = []
 
-            # for loop can probably be made more efficient
-            for simplex in self.simplices:
-                if (edge[0] in simplex) and (edge[1] in simplex):
-                    simplices_to_change.append(simplex)
-            if (simplices_to_change.size > 2):
-                print("too many simplices")
-                return
+    def find_peak(self, simplex, edge):
+        for point in simplex:
+            if point not in edge:
+                 return point
 
     # Reindexes simplicers or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
         arr = arr - np.array([sum(i > k for k in bad_points) for i in arr.flatten()]).reshape(arr.shape)
         return arr
+
+
+    # Function to split edges in half
+    def split_edges(self, bad_edges):
+        for edge in bad_edges:
+            index = np.where(np.all(edge==self.edges, axis=1))
+            self.edges=np.delete(self.edges, index, axis=0)
+
+            # calculate midpoint
+            p0, p1 = self.points[edge]
+            mid = (p0+p1)/2
+            simplices_to_change = []
+
+            # relevant simplices:
+            # (!!!) for loop can probably be made more efficient
+            for simplex in self.simplices:
+                if (edge[0] in simplex) and (edge[1] in simplex):
+                    simplices_to_change.append(simplex)
+            if (len(simplices_to_change) >2):
+               print("too many simplices")
+               return
+ 
+            # add points
+            self.points= np.append(self.points,[mid], axis=0)
+            mid_ind = np.shape(self.points)[0]-1
+
+            # add edges, simplices
+            for simplex in simplices_to_change:
+               # remove old simplex
+               simplex.tolist()
+               index= np.where(np.all(simplex==self.simplices,axis=1))
+               self.simplices = np.delete(self.simplices, index, axis=0)
+
+               # add simplices
+               simp_peak= self.find_peak(simplex, edge)
+               others= simplex.copy().tolist()
+               others.remove(simp_peak)
+               s1=[simp_peak, mid_ind, others[0]]
+               s1.sort()
+               s2= [simp_peak, mid_ind, others[1]]
+               s2.sort()
+              
+               self.simplices=np.append(self.simplices, [s1], axis=0)
+               self.simplices=np.append(self.simplices,	[s2], axis=0)
+
+               # add edges
+               self.edges= np.append(self.edges, [[simp_peak,mid_ind]], axis=0)
+               self.edges= np.append(self.edges, [[edge[0], mid_ind]], axis=0)
+               self.edges= np.append(self.edges, [[edge[1], mid_ind]], axis=0)
+              
+               
 
     # Function to remove points
     def remove_points(self, bad_points):
@@ -66,10 +108,10 @@ class contour:
     def refine_edges(self, delta):
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
-        bad_edges = edges[lengths > delta]
+        bad_edges = self.edges[lengths > delta]
         self.split_edges(bad_edges)
 
         # identify poles, remove
         bad_points = []
         self.remove_points(bad_points)
-        # (!!!) add here
+        
