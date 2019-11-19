@@ -46,7 +46,7 @@ class contour:
     def split_edges(self, bad_edges):
         for edge in bad_edges:
             index = np.where(np.all(edge==self.edges, axis=1))
-            self.edges=np.delete(self.simplices, index, axis=1)
+            self.edges=np.delete(self.edges, index, axis=0)
 
             # calculate midpoint
             p0, p1 = self.points[edge]
@@ -87,7 +87,8 @@ class contour:
 
                # add edges
                self.edges= np.append(self.edges, [[simp_peak,mid_ind]], axis=0)
-
+               self.edges= np.append(self.edges, [[edge[0], mid_ind]], axis=0)
+               self.edges= np.append(self.edges, [[edge[1], mid_ind]], axis=0)
               
                
 
@@ -107,10 +108,10 @@ class contour:
     def refine_edges(self, delta):
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
-        bad_edges = edges[lengths > delta]
+        bad_edges = self.edges[lengths > delta]
         self.split_edges(bad_edges)
 
         # identify poles, remove
         bad_points = []
         self.remove_points(bad_points)
-        # (!!!) add here
+        

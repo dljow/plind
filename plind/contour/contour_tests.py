@@ -58,11 +58,56 @@ class TestContour(unittest.TestCase):
     self.assertTrue([0,2,3] not in new_simplices)
 
   def test_remove_points(self):
-    self.assertTrue(False)
+  # Tests removal of points
+    bad_point= 0
+    test_contour.init_contour(points)
+    test_contour.remove_points([bad_point])
+    new_points = test_contour.points.tolist()
+    new_edges = test_contour.edges.tolist()
+    new_simplices= test_contour.simplices.tolist()
+
+    # point is actually removed
+    self.assertTrue(bad_point not in new_points)
+
+    # edges are back indexed appropriately
+    self.assertTrue([0,2] in new_edges)
+    self.assertTrue([1,2] in new_edges)
+    self.assertTrue(len(new_simplices)==0)
 
 
   def test_refine_edges(self):
-    self.assertTrue(False)
+  # Tests overall refinement of an edge, this is an integrated
+  # test of all of the above. 
+    delta = np.sqrt(2)-0.001 
+
+    test_contour.init_contour(points)
+    test_contour.refine_edges(delta)
+
+    new_points = test_contour.points.tolist()
+    new_edges = test_contour.edges.tolist()
+    new_simplices= test_contour.simplices.tolist()
+
+    # The diagonal edge is no longer present
+    self.assertTrue([0,3] not in new_edges)
+
+    # The too-large simplices are no longer present
+    self.assertTrue([0,1,3] not in new_simplices)
+    self.assertTrue([0,2,3] not in new_simplices)
+
+    # The midpoint is in the array 
+    self.assertTrue([0.5, 0.5] in new_points) 
+
+    # The new edges have been added
+    self.assertTrue([3,4] in new_edges)
+    self.assertTrue([1,3] in new_edges)
+    self.assertTrue([0,4] in new_edges)
+    self.assertTrue([2,4] in new_edges)
+
+    # The new simplices have been added
+    self.assertTrue([0,1,4] in new_simplices)
+    self.assertTrue([0,2,4] in new_simplices)
+    self.assertTrue([1,3,4] in new_simplices)
+    self.assertTrue([2,3,4] in new_simplices)
 
 if __name__ == '__main__':
         unittest.main()
