@@ -11,13 +11,13 @@ def conintegrate(f, contour, args=[]):
         mid = np.sum(contour.points[simp], 0)/len(simp)
         # compute volume element (this is very janky and not general at all)
         [p0, p1, p2] = contour.points[simp]
-        base = abs(p1-p0)
+        base = np.sum((p1-p0)*np.conj(p1-p0))
         mid_pt = (p1+p0)/2
-        height = abs(p2-mid_pt)
+        height = np.sum((p2-mid_pt)*np.conj(p2-mid_pt))
         vol = 0.5*base*height
 
         int += f(mid, *args)*vol
-    return vol
+    return int
 
 #def conintegrate(f, line, args=[], Nint=1000):
 #    pts = p.plane_to_sphere(line)

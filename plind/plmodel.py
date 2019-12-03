@@ -1,5 +1,6 @@
+
 import numpy as np
-#from autograd import elementwise_grad as egrad
+# from autograd import elementwise_grad as egrad
 from scipy.integrate import solve_ivp, fixed_quad
 from .plexception import *
 from .integrate import conintegrate
@@ -65,25 +66,25 @@ class plmodel:
         return morse
 
 
-    def get_grad(self, dx=1e-6):
-        """Return self.grad. If self.grad is none, returns numerical gradient computed from self.expfun."""
-        if self.grad is None:
-            morse = self.get_morse()
-
-            #morse_grad = egrad(morse)
-
-            def auto_grad(z, *args):
-                 gradRe = np.real(morse_grad(z, *args))
-                 gradIm = np.imag(morse_grad(z, *args))
-                 return -np.conj(morse_grad(z, *args))
-
-            return auto_grad
-        else:
-            return self.grad
+    # def get_grad(self, dx=1e-6):
+    #     """Return self.grad. If self.grad is none, returns numerical gradient computed from self.expfun."""
+    #     if self.grad is None:
+    #         morse = self.get_morse()
+    #
+    #         morse_grad = egrad(morse)
+    #
+    #         def auto_grad(z, *args):
+    #             # gradRe = np.real(morse_grad(z, *args))
+    #             # gradIm = np.imag(morse_grad(z, *args))
+    #             return -np.conj(morse_grad(z, *args))
+    #
+    #         return auto_grad
+    #     else:
+    #         return self.grad
 
     # Functions for performing the PL integration
     def descend(self, dt, Nstep, delta):
-        gradh = self.get_grad()
+        gradh = self.grad #self.get_grad()
 
         i = 0
         while i < Nstep:
