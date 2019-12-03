@@ -1,5 +1,5 @@
-import autograd.numpy as np
-from autograd import elementwise_grad as egrad
+import numpy as np
+#from autograd import elementwise_grad as egrad
 from scipy.integrate import solve_ivp, fixed_quad
 from .plexception import *
 from .integrate import conintegrate
@@ -70,12 +70,12 @@ class plmodel:
         if self.grad is None:
             morse = self.get_morse()
 
-            morse_grad = egrad(morse)
+            #morse_grad = egrad(morse)
 
             def auto_grad(z, *args):
-                # gradRe = np.real(morse_grad(z, *args))
-                # gradIm = np.imag(morse_grad(z, *args))
-                return -np.conj(morse_grad(z, *args))
+                 gradRe = np.real(morse_grad(z, *args))
+                 gradIm = np.imag(morse_grad(z, *args))
+                 return -np.conj(morse_grad(z, *args))
 
             return auto_grad
         else:

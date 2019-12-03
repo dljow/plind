@@ -4,27 +4,55 @@ import sys
 sys.path.append("..")
 
 import unittest
-from plind import *
+from plind.plmodel import *
+from plind.contour.core import *
 import numpy as np
 
 TOL= 10**-7
-dt=10**-6
-Nstep=500
-delta= 50
+dt=10**-2
+Nstep=50
+delta= 1
+distTOL= dt*delta*2
 
 class integratedTestplmodel(unittest.TestCase):
 
-   def test_gaussian_2D(self):
+   def test_gaussian_contour(self):
    # Integrates the gaussian function over the real line
-      base_array = np.linspace(-100,100, 100)+0*1j
+      base_array = np.linspace(-1,1, 20)+0*1j
       w,x = np.meshgrid(base_array, base_array)
-      gauss_soln = sqrt((2*pi)**2)
-      gradh = lambda x: [2*x[0].real, -2*x[0].imag, 2*x[1].real, 2*x[1].imag]
+      w=w.flatten()
+      x=x.flatten()
+      gauss_soln = np.sqrt((2*np.pi)**2)
+      gradh = lambda x: np.transpose(np.array([x[:,0].imag- 1j*x[:,0].real, x[:,1].imag -1j*x[:,1].real]))
       func = lambda x: (1/2)*(x[0]**2+x[1]**2)
-      model = plmodel([np.flatten(w), np.flatten(x)], func, gradh=gradh)
+      cont = contour()
+      cont.init_contour(np.transpose([w,x]))
+      print(cont.points)
+      model = plmodel(cont, func, grad=gradh)
       model.descend(dt, Nstep, delta)
       traj = model.trajectory
-      print(traj)
+      final_cont= model.contour.points
+      print(final_cont)
+      for point in final_cont:
+          print(point)
+          self.assertTrue(abs(point[0].real-point[0].imag) < distTOL)
+          self.assertTrue(abs(point[1].real-point[1].imag) < distTOL)
+
+      
+
+   def test_gaussian_2D_integral(self):
+   # Integrates the gaussian function over the real line
+      base_array = np.linspace(-1,1, 20)+0*1j
+      w,x = np.meshgrid(base_array, base_array)
+      w=w.flatten()
+      x=x.flatten()
+      gauss_soln = np.sqrt((2*np.pi)**2)
+      gradh = lambda x: np.transpose(np.array([-x[:,0].imag+ 1j*x[:,0].real, -x[:,1].imag +1j*x[:,1].real]))
+      func = lambda x: (1/2)*(x[0]**2+x[1]**2)
+      cont = contour()
+      cont.init_contour(np.transpose([w,x]))
+      model = plmodel(cont, func, grad=gradh)
+      model.descend(dt, Nstep, delta)
       model.integrate()
 
       ans = model.integral
@@ -32,4 +60,9 @@ class integratedTestplmodel(unittest.TestCase):
       print(gauss_soln)
 
       self.assertTrue(abs(ans-gauss_soln)< TOL)
+
+
+
+if __name__ == '__main__':
+        unittest.main()
 

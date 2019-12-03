@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # conintegrate.py - performs contour integral
-import autograd.numpy as np
+import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
