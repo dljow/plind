@@ -83,20 +83,24 @@ class plmodel:
     #         return self.grad
 
     # Functions for performing the PL integration
-    def descend(self, dt, Nstep, delta):
-        gradh = self.grad #self.get_grad()
+    def descend(self, dt, Nstep, delta, thresh):
+
+        h = self.get_morse()
+        gradh = self.grad  # self.get_grad()
 
         i = 0
         while i < Nstep:
             # perform euler
             self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
 
-            # remove points
-            bad_points = []  # find the points to remove
-            self.contour.remove_points(bad_points)
-
             # refine mesh
             self.contour.refine_edges(delta)
+
+            # remove points
+            hval = np.array([h(p, *self.expargs) for p in self.contour.points])
+            bad_points = np.where(hval < thresh)[0]  # find the points to remove
+            if len(bad_points) > 0:
+                self.contour.remove_points(bad_points)
 
             # add new contour to trajectory
             self.trajectory = np.append(self.trajectory, self.contour)
