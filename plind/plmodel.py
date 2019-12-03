@@ -109,6 +109,8 @@ class plmodel:
         else:
             self.intfun = intfun
 
+        self.integral = conintegrate(self.intfun, self.contour, args=self.expargs)
+
         # self.contour_spline, self.contour_spline_der, self.contour_spline_param = self.get_contour_spline()
         #
         # # Identify poles:
