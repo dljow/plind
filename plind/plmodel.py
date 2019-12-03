@@ -83,7 +83,7 @@ class plmodel:
 
     # Functions for performing the PL integration
     def descend(self, dt, Nstep, delta):
-        gradh = self.get_grad()
+        gradh = self.grad #self.get_grad()
 
         i = 0
         while i < Nstep:
