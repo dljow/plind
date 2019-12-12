@@ -7,6 +7,7 @@ from .poles import *
 from .interpolate import *
 from .descend import *
 from .contour import *
+from time import time
 
 DIVERGE = 10**9  # Divergence threshold. functions that evaluate to higher than this are considered poles.
 
@@ -88,23 +89,39 @@ class plmodel:
         gradh = self.grad  # self.get_grad()
 
         i = 0
+        t_flow = 0
+        t_ref = 0
+        t_bad = 0
+        t_edg = 0
+        t_del = 0
+        t_rind = 0
         while i < Nstep:
             # perform euler
+            t0 = time()
             self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
+            t_flow += time() - t0
 
             # refine mesh
+            t0 = time()
             self.contour.refine_edges(delta)
+            t_ref += time() - t0
 
             # remove points
+            t0 = time()
             hval = np.array([h(p, *self.expargs) for p in self.contour.points])
             bad_points = np.where(hval < thresh)[0]  # find the points to remove
+            t_r = 0
             if len(bad_points) > 0:
-                self.contour.remove_points(bad_points)
+                t_r = self.contour.remove_points(bad_points)
+            t_rind += t_r
+            t_bad += time() - t0
 
             # add new contour to trajectory
             self.trajectory = np.append(self.trajectory, self.contour)
 
             i += 1
+
+        return t_flow, t_ref, t_bad, t_rind
 
     # Function for integrating over contour
     def integrate(self, integrator=fixed_quad, Nint=200, intfun=None):

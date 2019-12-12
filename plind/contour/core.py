@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial import Delaunay
+from time import time
 
 class contour:
 
@@ -37,7 +38,7 @@ class contour:
             if point not in edge:
                  return point
 
-    # Reindexes simplicers or edges given a list of bad_points that will be removed
+    # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
         arr = arr - np.array([sum(i > k for k in bad_points) for i in arr.flatten()]).reshape(arr.shape)
         return arr
@@ -102,8 +103,11 @@ class contour:
         self.edges = np.delete(self.edges, bad_edges, axis=0)
         self.simplices = np.delete(self.simplices, bad_simplices, axis=0)
         # relable points
+        t0 = time()
         self.edges = self.rm_reindex(self.edges, bad_points)
         self.simplices = self.rm_reindex(self.simplices, bad_points)
+        t_rind = time()-t0
+        return t_rind
 
     # Function to refine edges
     def refine_edges(self, delta):
