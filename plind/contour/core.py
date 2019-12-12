@@ -40,7 +40,7 @@ class contour:
 
     # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
-        arr = arr - np.array([sum(i > k for k in bad_points) for i in arr.flatten()]).reshape(arr.shape)
+        arr = arr - np.array([len(np.where(i > bad_points)[0]) for i in arr.flatten()]).reshape(arr.shape)
         return arr
 
 
