@@ -102,11 +102,6 @@ class plmodel:
             self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
             t_flow += time() - t0
 
-            # refine mesh
-            t0 = time()
-            self.contour.refine_edges(delta)
-            t_ref += time() - t0
-
             # remove points
             t0 = time()
             hval = np.array([h(p, *self.expargs) for p in self.contour.points])
@@ -117,6 +112,11 @@ class plmodel:
             t_rind += t_r
             t_bad += time() - t0
 
+            # refine mesh
+            t0 = time()
+            self.contour.refine_edges(delta)
+            t_ref += time() - t0
+            
             # add new contour to trajectory
             self.trajectory = np.append(self.trajectory, self.contour)
 
