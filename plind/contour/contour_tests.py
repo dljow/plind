@@ -35,11 +35,16 @@ class TestContour(unittest.TestCase):
 
   def test_split_edges(self):
     # Tests if bad edges are appropriately split
-    bad_edges =[[0,3]] # diagonal edge in block
+    bad_edges =np.array([[0,3]]) # diagonal edge in block
 
     test_contour.init_contour(points)
+    index=test_contour.get_edgelengths() > 1
+    print("The index")
+    print(index)
+    print("the edge")
+    print(test_contour.edges[index])
   
-    test_contour.split_edges(bad_edges)
+    test_contour.split_edges(bad_edges, index)
     new_points = test_contour.points.tolist()
     new_edges = test_contour.edges.tolist()
     new_simplices= test_contour.simplices.tolist()
