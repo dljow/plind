@@ -38,11 +38,7 @@ class TestContour(unittest.TestCase):
     bad_edges =np.array([[0,3]]) # diagonal edge in block
 
     test_contour.init_contour(points)
-    index=test_contour.get_edgelengths() > 1
-    print("The index")
-    print(index)
-    print("the edge")
-    print(test_contour.edges[index])
+    index=np.where(test_contour.get_edgelengths() > 1)
   
     test_contour.split_edges(bad_edges, index)
     new_points = test_contour.points.tolist()

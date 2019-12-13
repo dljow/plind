@@ -48,15 +48,9 @@ class contour:
     def split_edges(self, bad_edges, indices):
         # Store the current number of points for indexing purposes
         num_points=np.shape(self.points)[0]
-        print("bad edges")
-        print(bad_edges)
-        print("edges before")
-        print(self.edges)
         
         # delete the bad edges from the overall edge set
         self.edges= np.delete(self.edges, indices, axis=0)
-        print("edges after deletion")
-        print(self.edges)
         
         # add the new midpoints to the overall points set
         bad_points=self.points[bad_edges]
@@ -66,10 +60,11 @@ class contour:
         
         # locate the simplices that need changing
         bad_edges=bad_edges.tolist()
+        simplices_aslist=self.simplices.tolist()
         simplices_to_change=[(simplex,edge, bad_edges.index(edge)) for simplex in self.simplices for edge in bad_edges if ((edge[0] in simplex) and (edge[1] in simplex))]
         
         # Delete bad simplices
-        bad_simplices = [simplex_tuple[0] for simplex_tuple in simplices_to_change]
+        bad_simplices=[simplices_aslist.index(simp_tuple[0].tolist()) for simp_tuple in simplices_to_change]
         self.simplices = np.delete(self.simplices, bad_simplices, axis=0)
         
         # Construct new simplices
@@ -86,8 +81,6 @@ class contour:
         self.edges=np.append(self.edges, new_edges1, axis=0)
         self.edges=np.append(self.edges, new_edges2, axis=0)
         self.edges=np.append(self.edges, new_edges3, axis=0)
-        print("edges at end")
-        print(self.edges)
 
 
 
@@ -112,7 +105,7 @@ class contour:
         lengths = self.get_edgelengths()
         bad_edges = self.edges[lengths > delta]
         if len(bad_edges)>0:
-          self.split_edges(bad_edges, lengths>delta)
+          self.split_edges(bad_edges, np.where(lengths>delta))
 
         # identify poles, remove
         bad_points = []
