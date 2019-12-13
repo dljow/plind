@@ -54,12 +54,12 @@ class contour:
         
         # add the new midpoints to the overall points set
         bad_points=self.points[bad_edges]
-        bad_points=bad_points[0]
-        midpoints = (bad_points[0]+bad_points[1])/2  
-        self.points=np.append(self.points, [midpoints], axis=0)
+        midpoints = (bad_points[:,0]+bad_points[:,1])/2  
+        self.points=np.append(self.points, midpoints, axis=0)
         
         # locate the simplices that need changing
         bad_edges=bad_edges.tolist()
+        
         simplices_aslist=self.simplices.tolist()
         simplices_to_change=[(simplex,edge, bad_edges.index(edge)) for simplex in self.simplices for edge in bad_edges if ((edge[0] in simplex) and (edge[1] in simplex))]
         
@@ -81,7 +81,6 @@ class contour:
         self.edges=np.append(self.edges, new_edges1, axis=0)
         self.edges=np.append(self.edges, new_edges2, axis=0)
         self.edges=np.append(self.edges, new_edges3, axis=0)
-
 
 
     # Function to remove points
