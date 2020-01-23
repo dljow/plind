@@ -46,42 +46,28 @@ class contour:
 
     # Function to split edges in half
     def split_edges(self, bad_edges, indices):
-        # Store the current number of points for indexing purposes
-        num_points=np.shape(self.points)[0]
-        
-        # delete the bad edges from the overall edge set
-        self.edges= np.delete(self.edges, indices, axis=0)
-        
-        # add the new midpoints to the overall points set
-        bad_points=self.points[bad_edges]
-        midpoints = (bad_points[:,0]+bad_points[:,1])/2  
-        self.points=np.append(self.points, midpoints, axis=0)
-        
-        # locate the simplices that need changing
-        bad_edges=bad_edges.tolist()
-        
-        simplices_aslist=self.simplices.tolist()
-        simplices_to_change=[(simplex,edge, bad_edges.index(edge)) for simplex in self.simplices for edge in bad_edges if ((edge[0] in simplex) and (edge[1] in simplex))]
-        
-        # Delete bad simplices
-        bad_simplices=[simplices_aslist.index(simp_tuple[0].tolist()) for simp_tuple in simplices_to_change]
-        self.simplices = np.delete(self.simplices, bad_simplices, axis=0)
-        
-        # Construct new simplices
-        new_simps1= [sorted([simp_tuple[2]+num_points, self.find_peak(simp_tuple[0], simp_tuple[1]), simp_tuple[1][0]]) for simp_tuple in simplices_to_change]
-        new_simps2= [sorted([simp_tuple[2]+num_points, self.find_peak(simp_tuple[0], simp_tuple[1]), simp_tuple[1][1]]) for simp_tuple in simplices_to_change]
-        self.simplices=np.append(self.simplices, new_simps1, axis=0)
-        self.simplices=np.append(self.simplices, new_simps2, axis=0)
-        
-        # Construct new edges
-        new_edges1= [sorted([self.find_peak(simp_tuple[0], simp_tuple[1]), simp_tuple[2]+num_points]) for simp_tuple in simplices_to_change]
-        new_edges2=[sorted([edge[0], bad_edges.index(edge)+num_points]) for edge in bad_edges]
-        new_edges3=[sorted([edge[1], bad_edges.index(edge)+num_points]) for edge in bad_edges]
-        
-        self.edges=np.append(self.edges, new_edges1, axis=0)
-        self.edges=np.append(self.edges, new_edges2, axis=0)
-        self.edges=np.append(self.edges, new_edges3, axis=0)
-
+	used_simps = np.array([],dtype=np.int)
+	uni_bad_edges=np.array([],dtype=np.int)
+	uni_bad_simps=np.array([],dtype=np.int)
+	for i, bad_edge in enumerate(bad_edges):
+	    simplices_tag = np.count_nonzero(np.isin(self.simplices, bad_edge), axis=-1) > 1
+	    simplices_tag = np.where(simplices_tag)[0]
+	    if not np.any(np.in1d(simplices_tag,used_simps)): # Check if we have used this simplex
+	        # Flag simplices_tag to not reuse simplices
+	        used_simps = np.append(used_simps, simplices_tag)
+	        # Add edge to new bad edge array
+	        uni_bad_edges = np.append(uni_bad_edges, bad_edge)
+	        # Add simplice(s) with the proper extras populated
+	        for j in range(self.ndim):
+	            if np.size(simplices_tag)>j:
+	                uni_bad_simps = np.append(uni_bad_simps,self.simplices[simplices_tag[j]], axis=0)
+	            else:
+	                junk_simp=np.full(np.shape(self.simplices[0]),np.nan)
+	                junk_simp[0]=bad_edge[0]
+	                junk_simp[1]=bad_edge[1]
+	                uni_bad_simps = np.append(uni_bad_simps, junk_simp, axis=0)
+	uni_bad_simps = uni_bad_simps.reshape(-1,3)
+	uni_bad_edges = uni_bad_edges.reshape(-1,2)
 
     # Function to remove points
     def remove_points(self, bad_points):
