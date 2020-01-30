@@ -4,7 +4,6 @@
 
 import numpy as np
 from plind.plmodel import plmodel
-from plind.contour import *
 import pl_testfunctions as plfun
 import matplotlib.pyplot as plt
 
@@ -17,14 +16,15 @@ eps = np.finfo(float).eps
 # ------------------------------------------------------------------------------
 
 # PARAMETERS TO DEFINE
-expfun = plfun.Airyexp
+expfun = lambda x, lamb: 1j*lamb*(x**3/3-x)
 start_time = 0.0
-end_time = 0.6
+end_time = 100
 Npts = 100
-Nint = 1000
+Nint = 100
 
-init_points = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
-c0 = contour(points=init_points)
+#init_contour = np.exp(1j*0)*(1/np.tan(np.linspace(2*np.pi, -eps, Npts, endpoint=False)/2) + 0.0j)
+#init_contour=np.exp(1j*np.linspace(0, 2*np.pi, Npts))
+init_contour=np.linspace(-5,5, Npts)
 
 # ------------------------------------------------------------------------------
 # Detailed Contour Convergence for a given lambda.
@@ -36,13 +36,30 @@ c0 = contour(points=init_points)
 # PARAMETERS TO DEFINE (!!!) #
 lamb = 1
 critpts = [-1, 1]
-domain = [-5, 5]
+domain = [-10, 10]
 
 # Generate model and perform descent
-plind = plmodel(c0, expfun, expargs=[lamb])
-plind.descend(1e-3, 100, 1)
+plind = plmodel(init_contour, expfun, expargs=[lamb])
+plind.descend(start_time, end_time)
 
-line = plind.get_contour().points
+soln= plind.get_solution()
+msg=soln.sget_message()
+
+print(msg)
+
+# -------------------------------------------------------------------------------
+# Open up Job's data for the Airy function and plot
+#
+# -------------------------------------------------------------------------------
+fpath="/home/etyhurst/picardlef/jobpl/Picard_Lefschetz_Integrator/code/data5/simplices.bin"
+contourjob=np.fromfile(fpath, dtype=np.double)
+print(np.size(contourjob))
+contourjob=np.reshape(contourjob, [int(np.size(contourjob)/2),2])
+contourjob=np.unique(contourjob, axis=0)
+print(contourjob)
+print(contourjob[:,0])
+
+line = plind.get_contour()
 trajectory = plind.get_trajectory()
 hfun = plind.get_morse()
 gradh = plind.get_grad()
@@ -59,20 +76,21 @@ ax.set_ylabel("Im($z$)")
 ax.set_ylim(domain[0], domain[1])
 ax.set_xlim(domain[0], domain[1])
 # Plot h
-im = ax.pcolormesh(u, v, hfun(z, lamb).real)
+im = ax.pcolormesh(u, v, hfun(z).real)
 fig.colorbar(im, ax=ax)
 for p0 in critpts:
     # Plot critical points
     ax.scatter(p0.real, p0.imag, color='w')
     # Plot contours of expfun.imag passing through p0, p1
-    ax.contour(u, v, expfun(z, lamb).imag, [expfun(p0, lamb).imag], colors='w', alpha=0.5)
+    ax.contour(u, v, expfun(z,lamb).imag, [expfun(p0,lamb).imag], colors='w', alpha=0.5)
 # Plot progress towards Lefschetz thimble
 for k in np.linspace(0, trajectory.shape[0], trajectory.shape[0]//10, endpoint=False):
     k = int(k)
-    ax.plot(trajectory[k].points.real[1:-1], trajectory[k].points.imag[1:-1], 'ro-')
+    ax.plot(trajectory[k].real[1:-1], trajectory[k].imag[1:-1], 'ro-')
 
 # Plot final contour
 dn = 5
 # ax.quiver(u[::dn, ::dn], v[::dn, ::dn], gradh(z[::dn, ::dn], lamb).real, gradh(z[::dn, ::dn], lamb).imag, scale=140, color='k')
 ax.plot(line.real[1:-1], line.imag[1:-1], 'bo-')
+ax.plot(contourjob[:,0], contourjob[:,1], 'go-')
 plt.show()

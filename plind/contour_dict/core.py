@@ -1,4 +1,48 @@
 import numpy as np
+import plind.contour as ctr
+import itertools
+
+# returns an equilateral triangle tesselation of R2
+def equilateral_real(N, domain):
+    contour = ctr.contour()
+    grid_x, grid_y = np.meshgrid(np.linspace(domain[0], domain[1], N), np.linspace(domain[2], domain[3], N), indexing='xy')
+    delta = abs(domain[1]-domain[0])/N
+    offset = np.ones(grid_x.shape)*delta
+    for i in np.arange(0, N):
+        if (i+1) % 2 != 0:
+            offset[i, :] = 0
+    grid_x = grid_x + offset
+    contour.points = np.array([grid_x.flatten(), grid_y.flatten()]).T
+    edges = []
+    for i in np.arange(0, N-1):
+        if i % 2 == 0:
+            edges.append([i*N, (i+1)*N])
+            for j in np.arange(1, N):
+                edges.append([i*N+j, i*N+j-1])
+                edges.append([i*N+j, (i+1)*N+j-1])
+                edges.append([i*N+j, (i+1)*N+j])
+        elif i % 2 != 0:
+            edges.append([i*N+N-1, (i+1)*N+N-1])
+            for j in np.arange(0, N-1):
+                edges.append([i*N+j, (i+1)*N+j])
+                edges.append([i*N+j, i*N+j+1])
+                edges.append([i*N+j, (i+1)*N+j+1])
+    for j in np.arange(0, N-1):
+        edges.append([(N-1)*N+j, (N-1)*N+j+1])
+    simplices = []
+    for i in np.arange(0, N-1):
+        for j in np.arange(0, N-1):
+            if i % 2 == 0:
+                simplices.append([i*N+j, i*N+j+1, (i+1)*N+j])
+                simplices.append([(i+1)*N+j, (i+1)*N+j+1, i*N+j+1])
+            elif i % 2 != 0:
+                simplices.append([i*N+j, (i+1)*N+j, (i+1)*N+j+1])
+                simplices.append([i*N+j, i*N+j+1, (i+1)*N+j+1])
+    contour.edges = np.array(edges)
+    contour.simplices = np.array(simplices)
+    return contour
+
+
 
 def _rotate(contour, pivot, angle):
     assert np.isreal(angle), "Angle to rotate should be real."
