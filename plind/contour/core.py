@@ -60,7 +60,7 @@ class contour:
                 # Also, we want to delete bad_edges from the original list of edges,
                 edges_tag = np.count_nonzero(np.isin(edges, bad_edge),axis=-1) == 2
                 edges_tag = np.where(edges_tag)[0]
-                edges = np.delete(edges, edges_tag, axis=0)
+                self.edges = np.delete(self.edges, edges_tag, axis=0)
                 # Add simplice(s) with the proper extras populated
                 for j in range(self.ndim):
                     if np.size(simplices_tag)>j:
@@ -74,13 +74,13 @@ class contour:
         uni_bad_edges = uni_bad_edges.reshape(-1,2)
 
         # used_simps conveniently tracks bad simplices after unifiquation
-        simplices = np.delete(simplices, used_simps, axis=0)
+        self.simplices = np.delete(self.simplices, used_simps, axis=0)
 
         # vertices which are not part of the bad edges in the bad simplices
-        for i, bad_edge in enumerate(uni_bad_edges):
+        for bad_edge in uni_bad_edges:
             print(
-                    bad_simp_set[np.isin(bad_simp_set, bad_edge, invert=True) *
-                        (np.count_nonzero(np.isin(bad_simp_set, bad_edge, invert=True),axis=-1)==ndim+1-2)[:,np.newaxis]]
+                    uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
+                        (np.count_nonzero(np.isin(uni_bad_simps, bad_edge, invert=True),axis=-1)==self.ndim+1-2)[:,np.newaxis]]
                     )
 
     # Function to remove points
