@@ -57,6 +57,10 @@ class contour:
                 used_simps = np.append(used_simps, simplices_tag)
                 # Add edge to new bad edge array
                 uni_bad_edges = np.append(uni_bad_edges, bad_edge)
+                # Also, we want to delete bad_edges from the original list of edges,
+                edges_tag = np.count_nonzero(np.isin(edges, bad_edge),axis=-1) == 2
+                edges_tag = np.where(edges_tag)[0]
+                edges = np.delete(edges, edges_tag, axis=0)
                 # Add simplice(s) with the proper extras populated
                 for j in range(self.ndim):
                     if np.size(simplices_tag)>j:
