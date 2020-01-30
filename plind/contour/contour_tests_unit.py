@@ -1,7 +1,25 @@
 ## Test module for the contour functions
 #
-# Tests the division of contour parts against a
-# few simple cases.
+# Tests the contour function against a much more
+# involved case. This is a key integration test
+# for all the contour functions
+#
+# This contour test is applied to the following shape:
+#
+#  1 - - - e1 - - - 3
+#  -              - -
+#  -     s0       -   -
+#  -          -     -
+#  e0      e4       e3
+#  -     -          -
+#  -   -       s1     - 
+#  - -              - 
+#  0 - - - e2 - - - 2
+#
+# The points are indexed as I've drawn them.
+# I make no guarantee of the edges/simplices 
+# being properly indexed
+
 import sys
 sys.path.append("..")
 
@@ -15,7 +33,6 @@ test_contour = contour(points=points)
 
 
 class TestContour(unittest.TestCase):
-
   def test_init_contour(self):
   # Tests the setup of a set of points into a triangulation 
      test_contour.init_contour(points)
