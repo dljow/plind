@@ -8,6 +8,7 @@ class contour:
         self.points = points
         self.edges = edges
         self.simplices = simplices
+        self.ndim = 0 
 
     # Function that initializes contour based on list of points
     def init_contour(self, points):
@@ -25,6 +26,7 @@ class contour:
         self.points = points
         self.edges = edges
         self.simplices = simplices
+        self.ndim = np.shape(simplices)[1]-1
 
     # Function to compute edge lengths
     def get_edgelengths(self):
@@ -73,15 +75,44 @@ class contour:
         uni_bad_simps = uni_bad_simps.reshape(-1,3)
         uni_bad_edges = uni_bad_edges.reshape(-1,2)
 
+        # add points 
+        midpts_ind= np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(uni_bad_edges)[0],1)
+        midpts = (self.points[bad_edges[:,0]] + self.points[bad_edges[:,1]])/2
+        self.points=np.append(self.points, midpts, axis=0)
+
+        # add edges
+        edges_1 = np.sort(np.append(midpts_ind, uni_bad_edges[:,0],axis=0),axis=0)
+        edges_1 = np.reshape(edges_1, [np.size(midpts_ind),2])
+
+        edges_2 = np.sort(np.append(midpts_ind, uni_bad_edges[:,1],axis=0),axis=0)
+        edges_2= np.reshape(edges_2, [np.size(midpts_ind), 2])
+        self.edges= np.append(self.edges, edges_1,axis=0)
+        self.edges= np.append(self.edges, edges_2,axis=0)
+
         # used_simps conveniently tracks bad simplices after unifiquation
         self.simplices = np.delete(self.simplices, used_simps, axis=0)
 
         # vertices which are not part of the bad edges in the bad simplices
-        for bad_edge in uni_bad_edges:
-            print(
-                    uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
+        for i, bad_edge in enumerate(uni_bad_edges):
+                # get all outliers for all simplices associated to the bad edge
+                outliers= uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
                         (np.count_nonzero(np.isin(uni_bad_simps, bad_edge, invert=True),axis=-1)==self.ndim+1-2)[:,np.newaxis]]
-                    )
+                # ndim- 1 outliers will exist in every edge
+                num_simps = int(np.size(outliers)/(self.ndim-1))
+                
+                # add new edge for every outlier
+                edges_outliers = np.sort(np.array(np.meshgrid(outliers, midpts_ind)).T.reshape(-1,2),axis=0)
+                self.edges= np.append(self.edges, edges_outliers,axis=0)
+
+
+                outliers = np.reshape(outliers, [num_simps, self.ndim-1])
+
+                # Simplices per outlier row
+                simp_1= np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps,1]),axis=1), bad_edge[0]*np.ones([num_simps,1]),axis=1),axis=1)
+                simp_2= np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps,1]),axis=1), bad_edge[1]*np.ones([num_simps,1]),axis=1),axis=1)
+               
+                self.simplices=np.append(self.simplices, simp_1,axis=0)
+                self.simplices= np.append(self.simplices, simp_2, axis=0)
 
     # Function to remove points
     def remove_points(self, bad_points):

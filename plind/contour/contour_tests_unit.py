@@ -8,11 +8,11 @@
 #
 #  1 - - - e1 - - - 3
 #  -              - -
-#  -     s0       -   -
+#  -     s0     -   -
 #  -          -     -
 #  e0      e4       e3
 #  -     -          -
-#  -   -       s1     - 
+#  -   -     s1     - 
 #  - -              - 
 #  0 - - - e2 - - - 2
 #
@@ -105,6 +105,9 @@ class TestContour(unittest.TestCase):
     new_edges = test_contour.edges.tolist()
     new_simplices= test_contour.simplices.tolist()
 
+
+    print(new_edges)
+    print(new_simplices)
     # The diagonal edge is no longer present
     self.assertTrue([0,3] not in new_edges)
 
