@@ -40,6 +40,7 @@ def equilateral_real(N, domain):
                 simplices.append([i*N+j, i*N+j+1, (i+1)*N+j+1])
     contour.edges = np.array(edges)
     contour.simplices = np.array(simplices)
+    contour.ndim = contour.simplices.shape[1]-1
     return contour
 
 

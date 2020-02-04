@@ -7,7 +7,7 @@ class contour:
         self.points = points
         self.edges = edges
         self.simplices = simplices
-        self.ndim = 0
+        self.ndim = simplices.shape[1]-1
 
     # Function that initializes contour based on list of points.
     def init_contour(self, points):
