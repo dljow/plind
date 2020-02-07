@@ -29,10 +29,8 @@ class contour:
 
     # Function to compute edge lengths
     def get_edgelengths(self):
-        ndim = self.points.shape[1]
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, ndim)], 0))
-
+        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
 
     def find_peak(self, simplex, edge):
         for pointind in simplex:
@@ -41,7 +39,7 @@ class contour:
 
     # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
-        arr = arr - np.array([len(np.where(i > bad_points)[0]) for i in arr.flatten()]).reshape(arr.shape)
+        arr = arr - np.array([np.count_nonzero(i>bad_points) for i in arr.flatten()]).reshape(arr.shape)
         return arr
 
     # Function to split edges in half
@@ -64,6 +62,8 @@ class contour:
                 # Add simplice(s) with the proper extras populated
                 for j in range(self.ndim):
                     if np.size(simplices_tag) > j:
+                        #print('uni',uni_bad_simps)
+                        #print('self.simplices',self.simplices[0])
                         uni_bad_simps = np.append(uni_bad_simps, self.simplices[simplices_tag[j]], axis=0)
                     # else:
                         # junk_simp=np.full(np.shape(self.simplices[0]),np.nan)
@@ -75,17 +75,13 @@ class contour:
 
         # add points
         midpts_ind = np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(uni_bad_edges)[0], 1)
-        midpts = (self.points[bad_edges[:, 0]] + self.points[bad_edges[:, 1]])/2
+        midpts = (self.points[uni_bad_edges[:, 0]] + self.points[uni_bad_edges[:, 1]])/2
         self.points = np.append(self.points, midpts, axis=0)
 
         # add edges
-        edges_1 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 0], axis=0), axis=0)
-        edges_1 = np.reshape(edges_1, [np.size(midpts_ind), 2])
-
-        edges_2 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 1], axis=0), axis=0)
-        edges_2 = np.reshape(edges_2, [np.size(midpts_ind), 2])
-        self.edges = np.append(self.edges, edges_1, axis=0)
-        self.edges = np.append(self.edges, edges_2, axis=0)
+        edges_1 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 0], axis=0).reshape(2,-1).T, axis=1)
+        edges_2 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 1], axis=0).reshape(2,-1).T, axis=1)
+        edges = np.concatenate((edges, edges_1, edges_2), axis=0)
 
         # used_simps conveniently tracks bad simplices after unifiquation
         self.simplices = np.delete(self.simplices, used_simps, axis=0)
@@ -106,8 +102,8 @@ class contour:
                 outliers = np.reshape(outliers, [num_simps, self.ndim-1])
 
                 # Simplices per outlier row
-                simp_1 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1]), axis=1), bad_edge[0]*np.ones([num_simps, 1]), axis=1), axis=1)
-                simp_2 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1]), axis=1), bad_edge[1]*np.ones([num_simps, 1]), axis=1), axis=1)
+                simp_1 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int), axis=1), bad_edge[0]*np.ones([num_simps, 1], dtype=np.int), axis=1), axis=1)
+                simp_2 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int), axis=1), bad_edge[1]*np.ones([num_simps, 1], dtype=np.int), axis=1), axis=1)
 
                 self.simplices = np.append(self.simplices, simp_1, axis=0)
                 self.simplices = np.append(self.simplices, simp_2, axis=0)
