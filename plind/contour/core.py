@@ -74,7 +74,7 @@ class contour:
         # add edges
         edges_1 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 0], axis=0).reshape(2,-1).T, axis=1)
         edges_2 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 1], axis=0).reshape(2,-1).T, axis=1)
-        edges = np.concatenate((edges, edges_1, edges_2), axis=0)
+        self.edges = np.concatenate((self.edges, edges_1, edges_2), axis=0)
 
         # used_simps conveniently tracks bad simplices after unifiquation
         self.simplices = np.delete(self.simplices, used_simps, axis=0)
