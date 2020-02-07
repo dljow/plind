@@ -30,12 +30,7 @@ class contour:
     # Function to compute edge lengths
     def get_edgelengths(self):
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
-
-    def find_peak(self, simplex, edge):
-        for pointind in simplex:
-            if pointind not in edge:
-                return pointind
+        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, ndim)], 0))
 
     # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
@@ -44,6 +39,9 @@ class contour:
 
     # Function to split edges in half
     def split_edges(self, bad_edges, indices):
+        print("the bad edge time", np.size(bad_edges))
+      #  print("why", bad_edges[0])
+      # print(self.simplices)
         used_simps = np.array([], dtype=np.int)
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.array([], dtype=np.int)
@@ -65,16 +63,11 @@ class contour:
                         #print('uni',uni_bad_simps)
                         #print('self.simplices',self.simplices[0])
                         uni_bad_simps = np.append(uni_bad_simps, self.simplices[simplices_tag[j]], axis=0)
-                    # else:
-                        # junk_simp=np.full(np.shape(self.simplices[0]),np.nan)
-                        # junk_simp[0]=bad_edge[0]
-                        # junk_simp[1]=bad_edge[1]
-                        # uni_bad_simps = np.append(uni_bad_simps, junk_simp, axis=0)
         uni_bad_simps = uni_bad_simps.reshape(-1, 3)
         uni_bad_edges = uni_bad_edges.reshape(-1, 2)
 
         # add points
-        midpts_ind = np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(uni_bad_edges)[0], 1)
+        midpts_ind = np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(uni_bad_edges)[0], 1, dtype=np.int)
         midpts = (self.points[uni_bad_edges[:, 0]] + self.points[uni_bad_edges[:, 1]])/2
         self.points = np.append(self.points, midpts, axis=0)
 
@@ -93,11 +86,13 @@ class contour:
                             (np.count_nonzero(np.isin(uni_bad_simps, bad_edge, invert=True), axis=-1)==self.ndim+1-2)[:, np.newaxis]]
                 # ndim- 1 outliers will exist in every edge
                 num_simps = int(np.size(outliers)/(self.ndim-1))
+                num_outliers=np.size(outliers)
+                outliers=np.reshape(outliers,[num_outliers,1])
 
                 # add new edge for every outlier
-                edges_outliers = np.sort(np.array(np.meshgrid(outliers, midpts_ind)).T.reshape(-1, 2), axis=0)
+                edges_outliers = np.sort(np.append(outliers, midpts_ind[i]*np.ones([num_outliers, 1], dtype=np.int),axis=1), axis=0)
+                edges_outliers = edges_outliers.astype(np.int)
                 self.edges = np.append(self.edges, edges_outliers, axis=0)
-
 
                 outliers = np.reshape(outliers, [num_simps, self.ndim-1])
 
