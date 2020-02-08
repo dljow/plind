@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial import Delaunay
+import array
 
 class contour:
 
@@ -34,14 +35,11 @@ class contour:
 
     # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
-        arr = arr - np.array([np.count_nonzero(i>bad_points) for i in arr.flatten()]).reshape(arr.shape)
+        arr = arr - np.count_nonzero(arr.ravel()[:,np.newaxis] > bad_points,axis=1).reshape(arr.shape)
         return arr
 
     # Function to split edges in half
     def split_edges(self, bad_edges, indices):
-        print("the bad edge time", np.size(bad_edges))
-      #  print("why", bad_edges[0])
-      # print(self.simplices)
         used_simps = np.array([], dtype=np.int)
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.array([], dtype=np.int)
