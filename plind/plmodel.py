@@ -2,6 +2,7 @@
 import numpy as np
 # from autograd import elementwise_grad as egrad
 from scipy.integrate import solve_ivp, fixed_quad
+from copy import copy
 from .plexception import *
 from .integrate import conintegrate
 from .poles import *
@@ -23,7 +24,7 @@ class plmodel:
             self.expargs = [self.expargs]
 
         self.ndim = contour.simplices.shape[1]-1  # ndim = number of vertices in simplex minus 1
-        self.trajectory = np.array([contour])
+        self.trajectory = np.array([copy(contour)])
         self.integral = None
         self.critpts = []
         self.poles = []   # Identifies regions of the contour that may contain poles.
@@ -109,7 +110,7 @@ class plmodel:
             self.contour.refine_edges(delta)
 
             # add new contour to trajectory
-            self.trajectory = np.append(self.trajectory, self.contour)
+            self.trajectory = np.append(self.trajectory, copy(self.contour))
 
             i += 1
 
