@@ -44,7 +44,7 @@ class contour:
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.array([], dtype=np.int)
         for i, bad_edge in enumerate(bad_edges):
-            simplices_tag = np.count_nonzero(np.isin(self.simplices, bad_edge), axis=-1) > 1
+            simplices_tag = np.isin(self.simplices, bad_edge).sum(axis=-1) > 1
             simplices_tag = np.where(simplices_tag)[0]
             if not np.any(np.in1d(simplices_tag, used_simps)):  # Check if we have used this simplex
                 # Flag simplices_tag to not reuse simplices
@@ -52,9 +52,8 @@ class contour:
                 # Add edge to new bad edge array
                 uni_bad_edges = np.append(uni_bad_edges, bad_edge)
                 # Also, we want to delete bad_edges from the original list of edges,
-                edges_tag = np.count_nonzero(np.isin(self.edges, bad_edge), axis=-1) == 2
-                edges_tag = np.where(edges_tag)[0]
-                self.edges = np.delete(self.edges, edges_tag, axis=0)
+                edges_tag = np.isin(self.edges, bad_edge).sum(axis=-1) == 2
+                self.edges = self.edges[~(edges_tag)]
                 # Add simplice(s) with the proper extras populated
                 for j in range(self.ndim):
                     if np.size(simplices_tag) > j:
@@ -81,7 +80,7 @@ class contour:
         for i, bad_edge in enumerate(uni_bad_edges):
                 # get all outliers for all simplices associated to the bad edge
                 outliers = uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
-                            (np.count_nonzero(np.isin(uni_bad_simps, bad_edge, invert=True), axis=-1)==self.ndim+1-2)[:, np.newaxis]]
+                            (np.isin(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==self.ndim+1-2)[:, np.newaxis]]
                 # ndim- 1 outliers will exist in every edge
                 num_simps = int(np.size(outliers)/(self.ndim-1))
                 num_outliers=np.size(outliers)
@@ -95,11 +94,10 @@ class contour:
                 outliers = np.reshape(outliers, [num_simps, self.ndim-1])
 
                 # Simplices per outlier row
-                simp_1 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int), axis=1), bad_edge[0]*np.ones([num_simps, 1], dtype=np.int), axis=1), axis=1)
-                simp_2 = np.sort(np.append(np.append(outliers, midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int), axis=1), bad_edge[1]*np.ones([num_simps, 1], dtype=np.int), axis=1), axis=1)
+                simp_1 = np.sort(np.concatenate(( midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int),outliers,bad_edge[0]*np.ones([num_simps, 1], dtype=np.int)),axis=1), axis=1)
+                simp_2 = np.sort(np.concatenate(( midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int),outliers,bad_edge[1]*np.ones([num_simps, 1], dtype=np.int)),axis=1), axis=1)
 
-                self.simplices = np.append(self.simplices, simp_1, axis=0)
-                self.simplices = np.append(self.simplices, simp_2, axis=0)
+                self.simplices = np.concatenate((self.simplices, simp_1, simp_2), axis=0)
 
     # Function to remove points
     def remove_points(self, bad_points):
