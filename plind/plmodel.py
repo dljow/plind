@@ -90,12 +90,6 @@ class plmodel:
         gradh = self.grad  # self.get_grad()
 
         i = 0
-        t_flow = 0
-        t_ref = 0
-        t_bad = 0
-        t_edg = 0
-        t_del = 0
-        t_rind = 0
         while i < Nstep:
             # perform euler
             self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
