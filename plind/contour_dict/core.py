@@ -13,6 +13,7 @@ def realcontour_1D(N, domain):
 
 # returns an equilateral triangle tesselation of R2
 def equilateral_real(N, domain):
+    """returns an equilateral triangle tesselation of R2"""
     contour = ctr.contour()
     grid_x, grid_y = np.meshgrid(np.linspace(domain[0], domain[1], N), np.linspace(domain[2], domain[3], N), indexing='xy')
     delta = abs(domain[1]-domain[0])/N
@@ -51,8 +52,6 @@ def equilateral_real(N, domain):
     contour.simplices = np.array(simplices)
     contour.ndim = contour.simplices.shape[1]-1
     return contour
-
-
 
 def _rotate(contour, pivot, angle):
     assert np.isreal(angle), "Angle to rotate should be real."
