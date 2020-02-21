@@ -31,11 +31,14 @@ class contour:
     # Function to compute edge lengths
     def get_edgelengths(self):
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-        return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
+        if self.ndim == 1:
+            return np.sqrt(differences**2)
+        else:
+            return np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
 
     # Reindexes simplices or edges given a list of bad_points that will be removed
     def rm_reindex(self, arr, bad_points):
-        arr = arr - np.count_nonzero(arr.ravel()[:,np.newaxis] > bad_points,axis=1).reshape(arr.shape)
+        arr = arr - np.count_nonzero(arr.ravel()[:, np.newaxis] > bad_points,axis=1).reshape(arr.shape)
         return arr
 
     # Function to split edges in half

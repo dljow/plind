@@ -2,6 +2,15 @@ import numpy as np
 import plind.contour as ctr
 import itertools
 
+# returns regular grid for R1
+def realcontour_1D(N, domain):
+    contour = ctr.contour()
+    contour.points = np.linspace(domain[0], domain[1], N)
+    contour.edges = np.array([[j, j+1] for j in np.arange(0, len(contour.points)-1)])
+    contour.simplices = contour.edges
+    contour.ndim = 1
+    return contour
+
 # returns an equilateral triangle tesselation of R2
 def equilateral_real(N, domain):
     contour = ctr.contour()
