@@ -63,7 +63,7 @@ class contour:
                         #print('uni',uni_bad_simps)
                         #print('self.simplices',self.simplices[0])
                         uni_bad_simps = np.append(uni_bad_simps, self.simplices[simplices_tag[j]], axis=0)
-        uni_bad_simps = uni_bad_simps.reshape(-1, 3)
+        uni_bad_simps = uni_bad_simps.reshape(-1, self.ndim)
         uni_bad_edges = uni_bad_edges.reshape(-1, 2)
 
         # add points
