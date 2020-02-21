@@ -86,7 +86,7 @@ class contour:
                             (np.isin(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==self.ndim+1-2)[:, np.newaxis]]
                 # ndim - 1 outliers will exist in every edge
                 if self.ndim == 1:
-                    num_simps = 0
+                    num_simps = 1
                 else:
                     num_simps = int(np.size(outliers)/(self.ndim-1))
                 num_outliers=np.size(outliers)
