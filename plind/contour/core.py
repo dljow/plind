@@ -81,11 +81,14 @@ class contour:
 
         # vertices which are not part of the bad edges in the bad simplices
         for i, bad_edge in enumerate(uni_bad_edges):
-                # get all outliers for all simplices associated to the bad edge
+                # get all outliers for all simplices associated to the bad edge (where outliers means points in the simplex not associated with the edge)
                 outliers = uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
                             (np.isin(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==self.ndim+1-2)[:, np.newaxis]]
-                # ndim- 1 outliers will exist in every edge
-                num_simps = int(np.size(outliers)/(self.ndim-1))
+                # ndim - 1 outliers will exist in every edge
+                if self.ndim == 1:
+                    num_simps = 0
+                else:
+                    num_simps = int(np.size(outliers)/(self.ndim-1))
                 num_outliers=np.size(outliers)
                 outliers=np.reshape(outliers,[num_outliers,1])
 
