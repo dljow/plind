@@ -9,11 +9,10 @@ def _vol(points):
     """Computes the volume of the (ndim)-simplex"""
     ndim = points.shape[-1]
     mat = (points - points[0])[1:]
-
     # the sqrt(mat@mat) ensures that the orientation of all the simplices are consistent, but the overall integral can be off by an overall minus sign
     # TODO: fix the overall minus sign possibly by tracking orientations.
-    if np.shape(mat) == (1,1):
-        dV = np.sqrt(mat[0][0]**2)
+    if (np.shape(mat) == (1,1)) or (np.shape(mat) == (1,)):
+        dV = np.sqrt(np.squeeze(mat)**2)
     else:
         dV = np.sqrt(np.linalg.det(mat@mat))/np.math.factorial(ndim)
     return dV
