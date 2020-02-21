@@ -5,22 +5,25 @@ from scipy.interpolate import splprep, splev
 from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
 
+def _vol(points):
+    """Computes the volume of the (ndim)-simplex"""
+    ndim = points.shape[-1]
+    mat = (points - points[0])[1:]
+
+    # the sqrt(mat@mat) ensures that the orientation of all the simplices are consistent, but the overall integral can be off by an overall minus sign
+    # TODO: fix the overall minus sign possibly by tracking orientations.
+    if np.shape(mat) == (1,1):
+        dV = np.sqrt(mat[0][0]**2)
+    else:
+        dV = np.sqrt(np.linalg.det(mat@mat))/np.math.factorial(ndim)
+    return dV
+
 def conintegrate(f, contour, args=[]):
-    int = 0
+    integral = 0j
     for simp in contour.simplices:
         mid = np.sum(contour.points[simp], 0)/len(simp)
-        # compute volume element (this is very janky and not general at all)
-        [p0, p1, p2] = contour.points[simp]
-        base = np.sqrt(np.sum((p1-p0)**2))
-        mid_pt = (p1+p0)/2
-        height = np.sqrt(np.sum((p2-mid_pt)**2))
-        #base = np.sum((p1-p0)*np.conj(p1-p0))
-        #mid_pt = (p1+p0)/2
-        #height = np.sum((p2-mid_pt)*np.conj(p2-mid_pt))
-        vol = 0.5*base*height
-
-        int += f(mid, *args)*vol
-    return int
+        integral += f(mid, *args)*_vol(contour.points[simp])
+    return integral
 
 #def conintegrate(f, line, args=[], Nint=1000):
 #    pts = p.plane_to_sphere(line)
