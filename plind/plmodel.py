@@ -68,15 +68,20 @@ class plmodel:
 
 
     # Functions for performing the PL integration
-    def descend(self, dt, Nstep, delta, thresh):
+    def descend(self, delta, thresh, tmax=2, dt_init=0.01):
 
         h = self.get_morse()
         gradh = self.grad  # self.get_grad()
 
+        t = 0
         i = 0
-        while i < Nstep:
-            # perform euler
-            self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
+        dt = dt_init
+        while t <= tmax:
+            #stop at tmax
+            dt = min(dt, tmax-dt)
+
+            # perform stepping
+            self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
 
             # remove points
             hval = np.array([h(p, *self.expargs) for p in self.contour.points])
@@ -90,7 +95,9 @@ class plmodel:
             # add new contour to trajectory
             self.trajectory = np.append(self.trajectory, copy(self.contour))
 
+            t += dt
             i += 1
+        print('total steps:', i, 'current time:',t)
 
 
     # Function for integrating over contour
