@@ -11,10 +11,10 @@ from .contour import *
 
 
 class plmodel:
-    """Perform Picard-Lefschetz integration for a given oscillatory integrand and initial contour in C^n.
+    """Perform Picard-Lefschetz integration for a given oscillatory integrand and initial contour in C^ndim.
 
     A plmodel object takes a oscillatory integrand of the form exp(iS) and an initial contour, and has
-    methods to deform the initla contour according towards the Lefschetz thimbles (contours along which
+    methods to deform the initial contour according towards the Lefschetz thimbles (contours along which
     the integral is no longer oscillatory). Plmodel also has methods to then integrate the integrand
     over the deformed contour.
 
@@ -26,7 +26,7 @@ class plmodel:
         expfun: function
             The function in the exponential of the oscillatory integrand. E.g. if the integrand
             is of the form exp(iS), then expfun = iS. expfun should take as its first argument a
-            complex vector, z, in C^n (that is z is an ndarray<complex> of length n). It may take
+            complex vector, z, in C^ndim (that is z is an ndarray<complex> of length ndim). It may take
             any number of additional arguments: expfun(z, *expargs).
         grad: function
             The complex gradient of the Morse function, h = Real(iS). That is grad = dh/dz. The
