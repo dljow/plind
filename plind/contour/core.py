@@ -3,7 +3,7 @@ from scipy.spatial import Delaunay
 import array
 
 class contour:
-     """A contour (surface) in C^ndim for the purposes of gradient flow and integration. 
+    """A contour (surface) in C^ndim for the purposes of gradient flow and integration. 
            
            Attributes
            ----------
@@ -20,7 +20,7 @@ class contour:
                   an edge.
            ndim: int
                   The dimension of the complex space, ie. C^ndim. 
-           """
+    """
         
     def __init__(self, points=np.array([]), edges=np.array([[]]), simplices=np.array([[]])):
         self.points = points
@@ -49,7 +49,7 @@ class contour:
            
             __init__: Initializes a plind.contour given points, edges, and simplices. 
             
-           """
+        """
         # Use Delaunay tesselation to get points
         tri = Delaunay(points)
         simplices = tri.simplices
@@ -78,7 +78,7 @@ class contour:
            --------
            refine_edges: Refines the edges of a plind.contour to be smaller than a given delta. 
            
-           """
+        """
         differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
         
         if self.ndim == 1:
@@ -108,12 +108,12 @@ class contour:
            --------
            remove_points: Removes the points at the indices bad_point_ind from the contour.
            
-           """
+        """
         arr = arr - np.count_nonzero(arr.ravel()[:, np.newaxis] > bad_point_ind,axis=1).reshape(arr.shape)
         return arr
 
     def split_edges(self, bad_edges, indicies):
-           """For an array of bad_edges flagged as too long for a given mesh spacing, split the edges in half
+        """For an array of bad_edges flagged as too long for a given mesh spacing, split the edges in half
               and modify the simplices, points arrays accordingly. 
               
               Note that this function deals with the simplices one at a time to avoid geometric conflicts, so
@@ -134,7 +134,7 @@ class contour:
            refine_edges: Refines the contour by splitting the edges to be finer, and removing points above
                          a certain threshold. 
            
-           """
+        """
         used_simps = np.array([], dtype=np.int)
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.array([], dtype=np.int)
@@ -205,7 +205,7 @@ class contour:
                 self.simplices = np.concatenate((self.simplices, simp_1, simp_2), axis=0)
 
     def remove_points(self, bad_point_ind):
-           """Given indices of points to be removed, remove them from self.points. 
+        """Given indices of points to be removed, remove them from self.points. 
            
            Parameters
            ----------
@@ -217,7 +217,7 @@ class contour:
            refine_edges: Refines the contour by splitting the edges to be finer, and removing points above
                          a certain threshold. 
            
-           """
+        """
         bad_edge_ind = np.unique(np.array(np.where(np.isin(self.edges, bad_point_ind)))[0])
         bad_simp_ind = np.unique(np.array(np.where(np.isin(self.simplices, bad_point_ind)))[0])
         # remove bad edges and simplices
@@ -230,7 +230,7 @@ class contour:
 
     # Function to refine edges
     def refine_edges(self, delta):
-           """Refines the contour by splitting the edges to be finer, and removing points above
+        """Refines the contour by splitting the edges to be finer, and removing points above
                          a certain threshold. 
            
            Parameters
@@ -238,7 +238,7 @@ class contour:
            delta: np.float64
                  Threshold size over which edges are split. 
            
-           """
+        """
         # Add points to the points that are too far away
         lengths = self.get_edgelengths()
         bad_edges = self.edges[lengths > delta]
