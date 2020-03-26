@@ -81,7 +81,7 @@ class plmodel:
 
     # Functions for getting things that are derived from the attributes
     def get_poles(self):
-        """Return location of poles and values of teh integrand at the poles.
+        """Return location of poles and values of the integrand at the poles.
 
         Returns
         -------
@@ -167,6 +167,8 @@ class plmodel:
 
     def integrate(self, intfun=None):
         """Perform contour integration along the current contour.
+
+        (!!!) Need to specify what kind of integration we are doing
 
         When called, plmodel.integrate() performs the contour integration and updates plmodel.integral to be
         the result of the integration.
