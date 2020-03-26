@@ -8,8 +8,8 @@ import quadpy
 
 def conintegrate(f, contour, args=[], order=3):
     scheme = quadpy.nsimplex.grundmann_moeller(contour.ndim, order)
-    simps = np.stack(contour.points(contour.simplices), axis=-2)    
-    val = sheme.integrate(f(x, *args), simps)
+    simps = np.stack(contour.points[contour.simplices], axis=-2)
+    val = scheme.integrate(lambda x: f(x, *args), simps)
     return sum(val)
 
 # def _vol(points):
