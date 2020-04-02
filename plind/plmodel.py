@@ -120,7 +120,7 @@ class plmodel:
         return morse
 
     # Functions for performing the PL integration
-    def descend(self, dt, Nstep, delta, thresh):
+    def descend(self, delta, thresh, tmax, dt_init):
         """Deform the contour according to the Picard-Lefschetz rule (flow the points along the gradient of the Morse function).
 
         Upon calling plmodel.descend(), the contour is deformed along the gradient of the Morse function with an adaptive mesh
@@ -129,15 +129,14 @@ class plmodel:
 
         Parameters
         ----------
-            dt: float
-                The time step for the deformation.
-            Nstep: int
-                The total number of time steps to perform.
             delta: float
                 The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other.
             thresh: float
                 The minimum value of expfun(z, *expargs) that a point z in the contour is allowed to be.
-
+            tmax: float
+                The time to integrate the flow equation to.
+            dt_init: float
+                The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during the flow, and total number of steps is celing(tmax/dt_init).
         """
         h = self.get_morse()  # get the Morse function, h = real(expfun)
         gradh = self.grad
@@ -169,7 +168,8 @@ class plmodel:
 
             t += dt
             i += 1
-        print('total steps:', i, 'current time:',t)
+        Nstep = i
+        print('total steps:', Nstep, 'current time:',t)
 
 
     def integrate(self, intfun=None):
