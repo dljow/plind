@@ -81,7 +81,7 @@ class plmodel:
             dt = min(dt, tmax-dt)
 
             # perform stepping
-            self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform euler pushing
+            self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform pushing
 
             # remove points
             hval = np.array([h(p, *self.expargs) for p in self.contour.points])
