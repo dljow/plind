@@ -10,7 +10,7 @@ def _euler(points, gradh, dt, expargs):
     return points + dt * gradh(points, expargs), dt
 
 def _rk4(points, gradh, dt, expargs):
-    # 4th order Runge-Kutta integrator. Essentially looks like Euler, but takes a weighted mean of different stepping sizes to improve accuracy.
+    # 4th order Runge-Kutta integrator. Essentially looks like Euler, but takes a weighted mean of the gradient at different stepping sizes to improve accuracy.
     k1 = dt * gradh(points, expargs)
     k2 = dt * gradh(points + k1/2, expargs)
     k3 = dt * gradh(points + k2/2, expargs)
