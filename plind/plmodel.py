@@ -143,10 +143,15 @@ class plmodel:
         gradh = self.grad
 
         # Descend according to the Picard-Lefschetz rule for Nstep time steps
+        t = 0
         i = 0
-        while i < Nstep:
-            # perform Euler pushing
-            self.contour.points = flow(self.contour.points, gradh, dt, expargs=self.expargs)
+        dt = dt_init
+        while t <= tmax:
+            #stop at tmax
+            dt = min(dt, tmax-dt)
+
+            # perform stepping
+            self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform pushing
 
             # remove points from the contour for which self.expfun evaluated at those points
             # is below the threshold
@@ -162,7 +167,9 @@ class plmodel:
             # add new contour to trajectory
             self.trajectory = np.append(self.trajectory, copy(self.contour))
 
+            t += dt
             i += 1
+        print('total steps:', i, 'current time:',t)
 
 
     def integrate(self, intfun=None):
@@ -172,7 +179,7 @@ class plmodel:
 
         When called, plmodel.integrate() performs the contour integration and updates plmodel.integral to be
         the result of the integration.
-        
+
         Parameters
         ----------
             intfun: function, optional
