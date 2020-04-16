@@ -4,8 +4,9 @@ from scipy.spatial import Delaunay
 import itertools
 
 # returns contour for a Delaunay triangulation of Rn
+
 def realcontour_nd(N, domain):
-    ndim = len(domain)//2
+    ndim = int(len(domain)//2)
     linspaces = []
     for i in np.arange(ndim):
         linspaces.append(np.linspace(domain[i], domain[i+1], N))
@@ -15,12 +16,14 @@ def realcontour_nd(N, domain):
         flattened_comps.append(comp.flatten())
     points = np.dstack(flattened_comps)[0]
     tri = Delaunay(points)
-    edges = np.array(list(itertools.combinations(tri.simplices[0], 2)))
-    for i, simp in enumerate(tri.simplices):
-        if i != 0:
-            for new_edge in np.array(list(itertools.combinations(simp, 2))):
-                if not any(np.isin(edges, new_edge).sum(axis=-1) == 2):
-                    edges = np.append(edges, [new_edge], axis=0)
+    #print(tri.simplices)
+    edges=[]
+    for i in range(ndim):
+        edges.append(np.sort(np.transpose([tri.simplices[:,i], tri.simplices[:,i+1]]), axis=-1))
+    edges = np.reshape(edges, [int(np.size(edges)/2), 2])
+    
+    #remove duplicates
+    edges=  np.unique(edges, axis=0)
     contour = ctr.contour()
     contour.points = points
     contour.edges = edges
