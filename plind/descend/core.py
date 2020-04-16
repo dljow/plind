@@ -10,7 +10,7 @@ def _euler(points, gradh, dt, expargs):
     return points + dt * gradh(points, expargs), dt
 
 def _rk4(points, gradh, dt, expargs):
-    #
+    # 4th order Runge-Kutta integrator. Essentially looks like Euler, but takes a weighted mean of the gradient at different stepping sizes to improve accuracy.
     k1 = dt * gradh(points, expargs)
     k2 = dt * gradh(points + k1/2, expargs)
     k3 = dt * gradh(points + k2/2, expargs)
@@ -18,6 +18,8 @@ def _rk4(points, gradh, dt, expargs):
     return points + (k1 + 2*k2 + 2*k3 + k4)/6, dt
 
 def _rkf45(points, gradh, dt, expargs):
+    # Runge-Kutta-Fehlberg 4(5) order integrator with adaptive time step.
+
     #HARDCODED STEP-WISE TOLERANCE!!
     tol = 1e-5
 
@@ -31,15 +33,22 @@ def _rkf45(points, gradh, dt, expargs):
     points_next     = points + k1 * 25/216    +                   k3 * 1408/2565  + k4 * 2197/4104   + k5 * -1/5
     points_next_alt = points + k1 * 16/135    +                   k3 * 6656/12825 + k4 * 28561/56430 + k5 * -9/50 + k6 * 2/55
 
+    # compute the difference between the 4th and 5th order results
     R = np.abs(points_next - points_next_alt) / dt
+
+    # the next timestep is bound by the largest R, hence smallest delta
     delta = np.min((np.divide(tol,2*R))**(1/4))
 
+    # if any difference is largest than tolerance, redo the current step with a smaller dt
     if np.any(R > tol):
         dt = delta*dt
         _rkf45(points, gradh, dt, expargs)
+
+    # otherwise, step and compute the next step with time step delta*dt
     return points_next, delta*dt
 
 def _dop853(points, gradh, dt, expargs):
+    #This would be the Dormand-Prince method as recommended by Numerical Recipes, but is not implemented at the moment. Do not use!
     k1 = dt * gradh(points, expargs)
     k2 = dt * gradh(points + k1/5, expargs)
     k3 = dt * gradh(points + k1*3/40 + k2*9/40, expargs)
@@ -51,8 +60,12 @@ def _dop853(points, gradh, dt, expargs):
     points_next_2 = points + k1*5179/57600 + k3*7571/16695 + k4*393/640 + k5*-92097/339200 + k6*187/2100 + k7/40
 
 def flow(points, gradh, dt, expargs=[]):
-    # performs Euler time step
+    # performs time step
    # identify_pole(points, gradh, dt, expargs)
-    #flow_method = _euler
+
+
+    # choose a method by hand here. Eventually, we should add this as an option.
+    # flow_method = _euler
+    # flow_method = _rk4
     flow_method = _rkf45
     return flow_method(points, gradh, dt, *expargs)
