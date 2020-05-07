@@ -27,7 +27,7 @@ def realcontour_nd(N, domain):
     #remove duplicates
     edges=  np.unique(edges, axis=0)
     contour = ctr.contour()
-    contour.points = points
+    contour.points = points+0*1j
     contour.edges = edges
     contour.simplices = tri.simplices
     contour.ndim = ndim
