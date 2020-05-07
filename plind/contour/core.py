@@ -135,6 +135,7 @@ class contour:
                          a certain threshold. 
            
         """
+        
         used_simps = np.array([], dtype=np.int)
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.array([], dtype=np.int)
