@@ -4,13 +4,17 @@ import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.integrate import simps, quadrature, fixed_quad
 from ..projection import *
-import quadpy
+import quadpy 
 
 def conintegrate(f, contour, args=[], order=3):
     scheme = quadpy.nsimplex.grundmann_moeller(contour.ndim, order)
     simps = np.stack(contour.points[contour.simplices], axis=-2)
     val = scheme.integrate(lambda x: f(x, *args), simps)
-    return sum(val)
+
+    # estimate error
+    scheme = quadpy.nsimplex.grundmann_moeller(contour.ndim, order+1)
+    order_up = scheme.integrate(lambda x: f(x, *args), simps)
+    return sum(val), np.abs(sum(val)-sum(order_up))
 
 # def _vol(points):
 #     """Computes the volume of the (ndim)-simplex"""

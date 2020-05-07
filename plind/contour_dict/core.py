@@ -15,13 +15,15 @@ def realcontour_nd(N, domain):
     for comp in R:
         flattened_comps.append(comp.flatten())
     points = np.dstack(flattened_comps)[0]
+    # width = abs(domain[1]-domain[0])
+    # points = np.random.rand(N**ndim, ndim)*width - 0.5*width
     tri = Delaunay(points)
     #print(tri.simplices)
     edges=[]
     for i in range(ndim):
         edges.append(np.sort(np.transpose([tri.simplices[:,i], tri.simplices[:,i+1]]), axis=-1))
     edges = np.reshape(edges, [int(np.size(edges)/2), 2])
-    
+
     #remove duplicates
     edges=  np.unique(edges, axis=0)
     contour = ctr.contour()
