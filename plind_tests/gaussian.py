@@ -1,11 +1,14 @@
-from .testfunction import testfunction
+import testfunction as testfn
 import numpy as np
 
 
 def Gauss_exp(z, ndim):
     gauss_sum=0
-    for i in range(ndim):
-        gauss_sum= gauss_sum + z[i]**2
+    if (ndim ==1):
+        gauss_sum=z**2
+    else: 
+        for i in range(ndim):
+            gauss_sum= gauss_sum + z[i]**2
     return 1j*(gauss_sum)
 
 def Gauss_gradh(z, ndim):
@@ -46,5 +49,5 @@ def Gaussian(ndim):
     thimble_dist = Gauss_thimble_dist
     integral = Gauss_answer
         
-    return testfunction(expfun, gradh, expargs, ndim, thimbles, thimble_dist, integral)
+    return testfn.testfunction(expfun, gradh, expargs, ndim, thimbles, thimble_dist, integral)
     
