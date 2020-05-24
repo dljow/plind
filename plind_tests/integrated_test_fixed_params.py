@@ -51,7 +51,7 @@ def setup_descend(testfunction, contour, parameters):
 class FixedParamsPlindTest(unittest.TestCase):
     THIMBLE_TOL=10**-2
     DELTA = 0.6
-    NSTEP = 150
+    NSTEP = 120
     DT_INIT = 1e-2
     THRESH =-7
     TMAX = DT_INIT*150
@@ -74,6 +74,28 @@ class FixedParamsPlindTest(unittest.TestCase):
         
         for point in points:
             self.assertTrue(gauss_fn.thimble_dist(point,1)< self.THIMBLE_TOL)
+            
+    def test_Gauss_nD_finds_contours(self):
+        param_dict = {
+        "delta": self.DELTA,
+        "nstep": self.NSTEP,
+        "dt_init": self.DT_INIT,
+        "thresh": self.THRESH,
+        "tmax": self.TMAX
+        }
+        
+        for n in [2,3]:
+            gauss_fn = gauss.Gaussian(n)
+            domain = tuple(np.ndarray.flatten(np.transpose(np.reshape(np.repeat((-1.5, 1.5), n), [2,n]))))
+            contour = realcontour_nd(10, domain)
+        
+            plind = setup_descend(gauss_fn, contour, param_dict)
+        
+            contour = plind.contour
+            points= contour.points
+        
+            for point in points:
+                self.assertTrue(gauss_fn.thimble_dist(point,n)< self.THIMBLE_TOL)
         
 if __name__ == '__main__':
 	unittest.main()

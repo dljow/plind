@@ -21,7 +21,7 @@ def Gauss_thimble(x, ndim):
     return x+1j*x
 
 def Gauss_thimble_dist(point, ndim):
-    return np.abs(point.real - point.imag)
+    return np.linalg.norm(point.real - point.imag)
 
 def Gaussian(ndim):
     """Returns the Gaussian integral of n-dimensions as a test function.
