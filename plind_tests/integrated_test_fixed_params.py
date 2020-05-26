@@ -10,6 +10,7 @@ from plind.plmodel import *
 from plind.contour_dict import equilateral_real, realcontour_nd, realcontour_1D
 from plind.plexception.plexception import *
 import gaussian as gauss
+import itertools
 
 import numpy as np
 
@@ -50,8 +51,9 @@ def setup_descend(testfunction, contour, parameters):
 
 class FixedParamsPlindTest(unittest.TestCase):
     THIMBLE_TOL=10**-2
+    CONSTANT_TOL = 5*10**-2
     DELTA = 0.6
-    NSTEP = 120
+    NSTEP = 150
     DT_INIT = 1e-2
     THRESH =-7
     TMAX = DT_INIT*150
@@ -74,6 +76,26 @@ class FixedParamsPlindTest(unittest.TestCase):
         
         for point in points:
             self.assertTrue(gauss_fn.thimble_dist(point,1)< self.THIMBLE_TOL)
+            
+    def test_Gauss_1D_constant_eval(self):
+        gauss_fn = gauss.Gaussian(1)
+        param_dict = {
+        "delta": self.DELTA,
+        "nstep": self.NSTEP,
+        "dt_init": self.DT_INIT,
+        "thresh": self.THRESH,
+        "tmax": self.TMAX
+        }
+        contour = realcontour_1D(10, (-1.5,1.5))
+        
+        plind = setup_descend(gauss_fn, contour, param_dict)
+        
+        contour = plind.contour
+        points= contour.points
+        
+        for pair in itertools.combinations(points, 2):
+            pairdiff = np.abs(gauss_fn.expfun(pair[0],1).imag - gauss_fn.expfun(pair[1],1).imag)
+            self.assertTrue(pairdiff < self.CONSTANT_TOL)
             
     def test_Gauss_nD_finds_contours(self):
         param_dict = {
