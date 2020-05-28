@@ -9,12 +9,12 @@ import quadpy
 def conintegrate(f, contour, args=[], order=3):
     scheme = quadpy.nsimplex.grundmann_moeller(contour.ndim, order)
     simps = np.stack(contour.points[contour.simplices], axis=-2)
-    val = scheme.integrate(lambda x: f(x, *args), simps)
+    val = scheme.integrate(lambda x:  f(x, *args), simps)
 
     # estimate error
     scheme = quadpy.nsimplex.grundmann_moeller(contour.ndim, order+1)
     order_up = scheme.integrate(lambda x: f(x, *args), simps)
-    return sum(val), np.abs(sum(val)-sum(order_up))
+    return np.sum(val), np.abs(np.sum(val)-np.sum(order_up))
 
 # def _vol(points):
 #     """Computes the volume of the (ndim)-simplex"""

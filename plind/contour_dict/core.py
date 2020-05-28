@@ -42,6 +42,7 @@ def realcontour_1D(N, domain):
     contour.edges = np.array([[j, j+1] for j in np.arange(0, len(contour.points)-1)])
     contour.simplices = contour.edges
     contour.ndim = 1
+    contour.points= np.reshape(contour.points, [N,1])
     return contour
 
 # returns an equilateral triangle tesselation of R2

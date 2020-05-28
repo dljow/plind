@@ -48,12 +48,23 @@ def setup_descend(testfunction, contour, parameters):
     plind.descend(parameters["delta"], parameters["thresh"], parameters["tmax"], parameters["dt_init"])
     return plind
 
+def setup_integrate(testfunction, contour, parameters):
+    plind = setup_descend(testfunction, contour, parameters)
+    plind.integrate()
+    return plind
+
 
 class FixedParamsPlindTest(unittest.TestCase):
+    
+
+## TOLERANCE PARAMETERS ##
     THIMBLE_TOL=10**-2
     CONSTANT_TOL = 5*10**-2
+    INTEGRAL_TOL = 5*10**-3
+
+
     DELTA = 0.6
-    NSTEP = 150
+    NSTEP = 140
     DT_INIT = 1e-2
     THRESH =-7
     TMAX = DT_INIT*150
@@ -96,6 +107,23 @@ class FixedParamsPlindTest(unittest.TestCase):
         for pair in itertools.combinations(points, 2):
             pairdiff = np.abs(gauss_fn.expfun(pair[0],1).imag - gauss_fn.expfun(pair[1],1).imag)
             self.assertTrue(pairdiff < self.CONSTANT_TOL)
+            
+    def test_Gauss_1D_integral(self):
+        gauss_fn = gauss.Gaussian(1)
+        param_dict = {
+        "delta": self.DELTA,
+        "nstep": self.NSTEP,
+        "dt_init": self.DT_INIT,
+        "thresh": self.THRESH,
+        "tmax": self.TMAX
+        }
+        contour = realcontour_1D(10, (-1.5,1.5))
+        
+        plind = setup_integrate(gauss_fn, contour, param_dict)
+        #print(plind.integral[1])
+        self.assertTrue(np.abs(plind.integral[0]- gauss_fn.integral(1)) < self.INTEGRAL_TOL)
+        #self.assertTrue(np.abs(plind.integral[0]- gauss_fn.integral(1)) < plind.integral[1])
+        
             
     def test_Gauss_nD_finds_contours(self):
         param_dict = {

@@ -85,7 +85,7 @@ class contour:
             norm_diff= np.sqrt(differences**2)
         else:
             norm_diff= np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
-        return norm_diff
+        return np.ndarray.flatten(norm_diff)
 
     def rm_reindex(self, arr, bad_point_ind):
         """Given an array of simplices or edges, re-index the array based on the removal of points. This is
