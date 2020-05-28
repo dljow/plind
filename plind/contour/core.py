@@ -3,7 +3,26 @@ from scipy.spatial import Delaunay
 import array
 from numba import jit
 
-@jit
+@jit(nopython=True)
+def isin_nb(simplices, edge, invert=False):
+    isin_arr = [False]
+    for i in np.arange(simplices.shape[0]):
+        simp = simplices[i]
+        for a in simp:
+            bool_val = False
+            for e in edge:
+                if a == e:
+                    bool_val = True
+            isin_arr.append(bool_val)
+
+    isin_arr = np.array(isin_arr[1:])
+    isin_arr = isin_arr.reshape(simplices.shape)
+    if invert:
+        return np.invert(isin_arr)
+    else:
+        return isin_arr
+
+@jit(nopython=True)
 def split_edges_nb(points, edges, simplices, ndim, bad_edges, indicies):
     """Numba compiled function.
     For an array of bad_edges flagged as too long for a given mesh spacing, split the edges in half
@@ -36,9 +55,13 @@ def split_edges_nb(points, edges, simplices, ndim, bad_edges, indicies):
     # The surface becomes inconsistent if two edges within the same simplex are flagged at once.
     # To combat this, only the first edge is split, and the second is assumed to be caught
     # by the subsequent time step
-    for i, bad_edge in enumerate(bad_edges):
+    for i in np.arange(bad_edges.shape[0]):
+        bad_edge = bad_edges[i]
         # Keep track of the simplices associated with an edge
-        simplices_tag = np.isin(simplices, bad_edge).sum(axis=-1) > 1
+        isin_arr = isin_nb(simplices, bad_edge)
+        simplices_tag = np.array(isin_arr).sum(axis=-1) > 1
+        ## simplices_tag = np.isin(simplices, bad_edge).sum(axis=-1) > 1
+
         simplices_tag = np.where(simplices_tag)[0]
 
         if not np.any(np.in1d(simplices_tag, used_simps)):  # Check if we have used this simplex
@@ -47,7 +70,7 @@ def split_edges_nb(points, edges, simplices, ndim, bad_edges, indicies):
             # Add edge to new bad edge array
             uni_bad_edges = np.append(uni_bad_edges, bad_edge)
             # Remove bad edges from the list of edges
-            edges_tag = np.isin(edges, bad_edge).sum(axis=-1) == 2
+            edges_tag = isin_nb(edges, bad_edge).sum(axis=-1) == 2
             edges = edges[~(edges_tag)]
 
             # Add simplice(s) with the proper extras populated
@@ -76,8 +99,10 @@ def split_edges_nb(points, edges, simplices, ndim, bad_edges, indicies):
     # vertices which are not part of the bad edges in the bad simplices
     for i, bad_edge in enumerate(uni_bad_edges):
             # Get all points in the simplex not associated to the edge ("outliers")
-            outliers = uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
-                        (np.isin(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==ndim+1-2)[:, np.newaxis]]
+
+
+            outliers = uni_bad_simps[isin_nb(uni_bad_simps, bad_edge, invert=True) *
+                        (isin_nb(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==ndim+1-2)[:, np.newaxis]]
             # ndim - 1 outliers will exist in every edge
             if ndim == 1:
                 num_simps = 1
