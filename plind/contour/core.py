@@ -60,7 +60,7 @@ def split_edges_nb(points, edges, simplices, ndim, bad_edges, indicies):
         # Keep track of the simplices associated with an edge
         isin_arr = isin_nb(simplices, bad_edge)
         simplices_tag = np.array(isin_arr).sum(axis=-1) > 1
-        ## simplices_tag = np.isin(simplices, bad_edge).sum(axis=-1) > 1
+        # simplices_tag = np.isin(simplices, bad_edge).sum(axis=-1) > 1
 
         simplices_tag = np.where(simplices_tag)[0]
 
