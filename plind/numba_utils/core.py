@@ -3,15 +3,14 @@ from numba import jit
 
 @jit(nopython=True)
 def isin_nb(simplices, edge, invert=False):
+    print('hi')
     isin_arr = [False]
-    for i in np.arange(simplices.shape[0]):
-        simp = simplices[i]
-        for a in simp:
-            bool_val = False
-            for e in edge:
-                if a == e:
-                    bool_val = True
-            isin_arr.append(bool_val)
+    for a in simplices.flatten():
+        bool_val = False
+        for e in edge:
+            if a == e:
+                bool_val = True
+        isin_arr.append(bool_val)
 
     isin_arr = np.array(isin_arr[1:])
     isin_arr = isin_arr.reshape(simplices.shape)
@@ -19,6 +18,24 @@ def isin_nb(simplices, edge, invert=False):
         return np.invert(isin_arr)
     else:
         return isin_arr
+
+# def isin_nb(simplices, edge, invert=False):
+#     isin_arr = [False]
+#     for i in np.arange(simplices.shape[0]):
+#         simp = simplices[i]
+#         for a in simp:
+#             bool_val = False
+#             for e in edge:
+#                 if a == e:
+#                     bool_val = True
+#             isin_arr.append(bool_val)
+#
+#     isin_arr = np.array(isin_arr[1:])
+#     isin_arr = isin_arr.reshape(simplices.shape)
+#     if invert:
+#         return np.invert(isin_arr)
+#     else:
+#         return isin_arr
 
 @jit(nopython=True)
 def sum_nb(isin_arr):
@@ -58,4 +75,3 @@ def bool_index_nb(arr, bool_arr):
             out[j] = arr.flatten()[i]
             j += 1
     return out
-    
