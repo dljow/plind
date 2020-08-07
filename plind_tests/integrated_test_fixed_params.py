@@ -60,14 +60,14 @@ class FixedParamsPlindTest(unittest.TestCase):
 ## TOLERANCE PARAMETERS ##
     THIMBLE_TOL=10**-2
     CONSTANT_TOL = 5*10**-2
-    INTEGRAL_TOL = 5*10**-3
+    INTEGRAL_TOL = 5*10**-2
 
 
     DELTA = 0.6
-    NSTEP = 140
-    DT_INIT = 1e-2
-    THRESH =-7
-    TMAX = DT_INIT*150
+    NSTEP = 150
+    DT_INIT = 2e-2
+    THRESH =-8
+    TMAX = DT_INIT*NSTEP
     
     def test_Gauss_1D_finds_contours(self):
         gauss_fn = gauss.Gaussian(1)
@@ -123,18 +123,18 @@ class FixedParamsPlindTest(unittest.TestCase):
         #print(plind.integral[1])
         self.assertTrue(np.abs(plind.integral[0]- gauss_fn.integral(1)) < self.INTEGRAL_TOL)
         #self.assertTrue(np.abs(plind.integral[0]- gauss_fn.integral(1)) < plind.integral[1])
-        
             
     def test_Gauss_nD_finds_contours(self):
-        param_dict = {
-        "delta": self.DELTA,
-        "nstep": self.NSTEP,
-        "dt_init": self.DT_INIT,
-        "thresh": self.THRESH,
-        "tmax": self.TMAX
-        }
-        
+       
         for n in [2,3]:
+            
+            param_dict = {
+                "delta": self.DELTA,
+                 "nstep": self.NSTEP,
+                 "dt_init": self.DT_INIT,
+                 "thresh": self.THRESH-(n-1), #dimension should increase threshold
+                 "tmax": self.TMAX
+                  }
             gauss_fn = gauss.Gaussian(n)
             domain = tuple(np.ndarray.flatten(np.transpose(np.reshape(np.repeat((-1.5, 1.5), n), [2,n]))))
             contour = realcontour_nd(10, domain)
@@ -146,6 +146,33 @@ class FixedParamsPlindTest(unittest.TestCase):
         
             for point in points:
                 self.assertTrue(gauss_fn.thimble_dist(point,n)< self.THIMBLE_TOL)
+
+    def test_Gauss_nD_integral(self):
+        
+        for n in [2,3]:
+            param_dict = {
+                "delta": self.DELTA,
+                 "nstep": self.NSTEP,
+                 "dt_init": self.DT_INIT,
+                 "thresh": self.THRESH-(n-1), #dimension should increase threshold
+                 "tmax": self.TMAX
+                  }
+            gauss_fn = gauss.Gaussian(n)
+            domain = tuple(np.ndarray.flatten(np.transpose(np.reshape(np.repeat((-1.5, 1.5), n), [2,n]))))
+            contour = realcontour_nd(10, domain)
+        
+            plind = setup_integrate(gauss_fn, contour, param_dict)
+            
+            print(n)
+            if (n==3):
+                print(-plind.integral[0])
+                print(gauss_fn.integral(n))
+                print(np.abs(-plind.integral[0]- gauss_fn.integral(n)))
+                self.assertTrue(np.abs(-plind.integral[0]- gauss_fn.integral(n)) < self.INTEGRAL_TOL)
+            else:
+                print(np.abs(plind.integral[0]- gauss_fn.integral(n)))
+                self.assertTrue(np.abs(plind.integral[0]- gauss_fn.integral(n)) < self.INTEGRAL_TOL)
+ 
         
 if __name__ == '__main__':
 	unittest.main()
