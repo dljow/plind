@@ -31,6 +31,9 @@ def realcontour_nd(N, domain):
     contour.edges = edges
     contour.simplices = tri.simplices
     contour.ndim = ndim
+    nsimps= np.shape(tri.simplices)[0]
+    print(nsimps)
+    contour.simp_edge= np.reshape(np.arange(0, (ndim+1)*nsimps, 1, dtype=int), [nsimps, (ndim+1)]) 
     return contour
 
 

@@ -22,11 +22,12 @@ class contour:
                   The dimension of the complex space, ie. C^ndim.
     """
 
-    def __init__(self, points=np.array([]), edges=np.array([[]]), simplices=np.array([[]])):
+    def __init__(self, points=np.array([]), edges=np.array([[]]), simplices=np.array([[]]), simp_edges=np.array([[]])):
         self.points = points
         self.edges = edges
         self.simplices = simplices
         self.ndim = simplices.shape[1]-1
+        self.simp_edges= simp_edges
 
     def init_contour(self, points):
         """Initialize a contour object from a set of points only, using a Delaunay triangulation to generate edges
