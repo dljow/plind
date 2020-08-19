@@ -1,0 +1,72 @@
+# init model
+lamb = 1
+delta = 0.6
+Nstep = 150
+dt_init = 8e-3
+thresh =-8
+tmax = dt_init*150
+
+contour = realcontour_nd(20, (-1.5,1.5,-1.5,1.5, -1.5, 1.5))
+
+*
+
+Timer unit: 1e-06 s
+
+Total time: 5.95291 s
+File: ../plind/plmodel.py
+Function: descend at line 123
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+   123                                               def descend(self, delta, thresh, tmax, dt_init):
+   124                                                   """Deform the contour according to the Picard-Lefschetz rule (flow the points along the gradient of the Morse function).
+   125                                           
+   126                                                   Upon calling plmodel.descend(), the contour is deformed along the gradient of the Morse function with an adaptive mesh
+   127                                                   algorithm to prevent points in the contour from becoming too sparse. At each time step, plmodel.contour is updated to
+   128                                                   be the current contour, and the current contour is appended to plmodel.trajectory.
+   129                                           
+   130                                                   Parameters
+   131                                                   ----------
+   132                                                       delta: float
+   133                                                           The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other.
+   134                                                       thresh: float
+   135                                                           The minimum value of expfun(z, *expargs) that a point z in the contour is allowed to be.
+   136                                                       tmax: float
+   137                                                           The time to integrate the flow equation to.
+   138                                                       dt_init: float
+   139                                                           The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during the flow, and total number of steps is celing(tmax/dt_init).
+   140                                                   """
+   141         1          6.0      6.0      0.0          h = self.get_morse()  # get the Morse function, h = real(expfun)
+   142         1          1.0      1.0      0.0          gradh = self.grad
+   143                                           
+   144                                                   # Descend according to the Picard-Lefschetz rule for Nstep time steps
+   145         1          1.0      1.0      0.0          t = 0
+   146         1          1.0      1.0      0.0          i = 0
+   147         1          0.0      0.0      0.0          dt = dt_init
+   148        15         21.0      1.4      0.0          while t <= tmax:
+   149                                                       #stop at tmax
+   150        14         35.0      2.5      0.0              dt = min(dt, tmax-dt)
+   151                                           
+   152                                                       # perform stepping
+   153        14      49681.0   3548.6      0.8              self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform pushing
+   154                                           
+   155                                                       # remove points from the contour for which self.expfun evaluated at those points
+   156                                                       # is below the threshold
+   157        14     356366.0  25454.7      6.0              hval = np.array([h(p, *self.expargs) for p in self.contour.points])
+   158        14        498.0     35.6      0.0              bad_points = np.where(hval < thresh)[0]  # find the points to remove
+   159        14         25.0      1.8      0.0              if len(bad_points) > 0:
+   160        11    5292743.0 481158.5     88.9                  self.contour.remove_points(bad_points)  # remove points
+   161                                           
+   162                                                       # perform the adaptive mesh refinement: simplices in the contour with edge lengths greater than
+   163                                                       # delta are split in half
+   164        14     252418.0  18029.9      4.2              self.contour.refine_edges(delta)
+   165                                           
+   166                                                       # add new contour to trajectory
+   167        14        933.0     66.6      0.0              self.trajectory = np.append(self.trajectory, copy(self.contour))
+   168                                           
+   169        14         35.0      2.5      0.0              t += dt
+   170        14         11.0      0.8      0.0              i += 1
+   171         1          1.0      1.0      0.0          Nstep = i
+   172         1        138.0    138.0      0.0          print('total steps:', Nstep, 'current time:',t)
+
+

@@ -55,7 +55,8 @@ class contour:
         simplices = tri.simplices
 
         # Extract all possible edge pairs from tesselation
-        edges = np.reshape(np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]]), [int(edges.size/2), 2])
+        edges = np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]]) 
+        edges= np.reshape(edges, [int(edges.size/2), 2])
         edges.sort(axis=1)  # put all pairs in ascending order
         edges = np.unique(edges, axis=0)  # remove duplicates
 
@@ -146,7 +147,8 @@ class contour:
         self.simplices= tri.simplices
         
                 # Extract all possible edge pairs from tesselation
-        edges = np.reshape(np.append(np.append(self.simplices[:, [0, 1]], self.simplices[:, [1, 2]]), self.simplices[:, [2, 0]]), [int(edges.size/2), 2])
+        edges = np.append(np.append(self.simplices[:, [0, 1]], self.simplices[:, [1, 2]]), self.simplices[:, [2, 0]])
+        edges= np.reshape(edges, [int(edges.size/2), 2])
         edges.sort(axis=1)  # put all pairs in ascending order
         self.edges = np.unique(edges, axis=0)  # remove duplicates
 
