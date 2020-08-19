@@ -135,76 +135,20 @@ class contour:
                          a certain threshold.
 
         """
-        
-        used_simps = np.array([], dtype=np.int)
-        uni_bad_edges = np.array([], dtype=np.int)
-        uni_bad_simps = np.empty((0, self.ndim+1), int)
-
-        # The surface becomes inconsistent if two edges within the same simplex are flagged at once.
-        # To combat this, only the first edge is split, and the second is assumed to be caught
-        # by the subsequent time step
-        for i, bad_edge in enumerate(bad_edges):
-            # Keep track of the simplices associated with an edge
-            simplices_tag = np.isin(self.simplices, bad_edge).sum(axis=-1) > 1
-            simplices_tag = np.where(simplices_tag)[0]
-
-            if not np.any(np.in1d(simplices_tag, used_simps)):  # Check if we have used this simplex
-                # Flag simplices_tag to not reuse simplices
-                used_simps = np.append(used_simps, simplices_tag)
-                # Add edge to new bad edge array
-                uni_bad_edges = np.append(uni_bad_edges, bad_edge)
-                # Remove bad edges from the list of edges
-                edges_tag = np.isin(self.edges, bad_edge).sum(axis=-1) == 2
-                self.edges = self.edges[~(edges_tag)]
-
-                # Add simplice(s) with the proper extras populated
-                uni_bad_simps = np.append(uni_bad_simps, self.simplices[simplices_tag], axis=0)
-
-        # The only edges this function treats and removes are uni_bad_edges,
-        # that is, the edges that are unique with respect to their simplices.
-        uni_bad_simps = uni_bad_simps.reshape(-1, self.ndim+1)
-        uni_bad_edges = uni_bad_edges.reshape(-1, 2)
 
         # Add the midpoints of all the bad edges
-        midpts_ind = np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(uni_bad_edges)[0], 1, dtype=np.int)
-        midpts = (self.points[uni_bad_edges[:, 0]] + self.points[uni_bad_edges[:, 1]])/2
+        midpts_ind = np.arange(np.shape(self.points)[0], np.shape(self.points)[0]+np.shape(bad_edges)[0], 1, dtype=np.int)
+        midpts = (self.points[bad_edges[:, 0]] + self.points[bad_edges[:, 1]])/2
         self.points = np.append(self.points, midpts, axis=0)
 
-        # Add the two edges that replace all the bad edges
-        edges_1 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 0], axis=0).reshape(2,-1).T, axis=1)
-        edges_2 = np.sort(np.append(midpts_ind, uni_bad_edges[:, 1], axis=0).reshape(2,-1).T, axis=1)
-        self.edges = np.concatenate((self.edges, edges_1, edges_2), axis=0)
-
-        # Delete all the bad edges
-        self.simplices = np.delete(self.simplices, used_simps, axis=0)
-
-        # vertices which are not part of the bad edges in the bad simplices
-        for i, bad_edge in enumerate(uni_bad_edges):
-                # Get all points in the simplex not associated to the edge ("outliers")
-                outliers = uni_bad_simps[np.isin(uni_bad_simps, bad_edge, invert=True) *
-                            (np.isin(uni_bad_simps, bad_edge, invert=True).sum(axis=-1)==self.ndim+1-2)[:, np.newaxis]]
-                uni_outliers = np.unique(outliers)
-
-                # ndim - 1 outliers will exist in every edge
-                if self.ndim == 1:
-                    num_simps = 1
-                else:
-                    num_simps = int(np.size(outliers)/(self.ndim-1))
-                num_outliers = np.size(uni_outliers)
-
-                outliers = np.reshape(outliers, [num_simps, self.ndim-1])
-                uni_outliers = np.reshape(uni_outliers, [num_outliers, 1])
-
-                # add new edge for every outlier
-                edges_outliers = np.sort(np.append(uni_outliers, midpts_ind[i]*np.ones([num_outliers, 1], dtype=np.int),axis=1), axis=0)
-                edges_outliers = edges_outliers.astype(np.int)
-                self.edges = np.append(self.edges, edges_outliers, axis=0)
-
-                # Simplices per outlier row
-                simp_1 = np.sort(np.concatenate(( midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int),outliers,bad_edge[0]*np.ones([num_simps, 1], dtype=np.int)),axis=1), axis=1)
-                simp_2 = np.sort(np.concatenate(( midpts_ind[i]*np.ones([num_simps, 1], dtype=np.int),outliers,bad_edge[1]*np.ones([num_simps, 1], dtype=np.int)),axis=1), axis=1)
-
-                self.simplices = np.concatenate((self.simplices, simp_1, simp_2), axis=0)
+        # Re-make the simplices using the Delaunay triangulation
+        tri = Delaunay(self.points)
+        self.simplices= tri.simplices
+        
+                # Extract all possible edge pairs from tesselation
+        edges = np.reshape(np.append(np.append(self.simplices[:, [0, 1]], self.simplices[:, [1, 2]]), self.simplices[:, [2, 0]]), [int(edges.size/2), 2])
+        edges.sort(axis=1)  # put all pairs in ascending order
+        self.edges = np.unique(edges, axis=0)  # remove duplicates
 
     def remove_points(self, bad_point_ind):
         """Given indices of points to be removed, remove them from self.points.
