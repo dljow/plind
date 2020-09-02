@@ -1,4 +1,4 @@
-import testfunction as testfn
+from .testfunction import *
 import numpy as np
 
 
@@ -49,5 +49,5 @@ def Gaussian(ndim):
     thimble_dist = Gauss_thimble_dist
     integral = Gauss_answer
         
-    return testfn.testfunction(expfun, gradh, expargs, ndim, thimbles, thimble_dist, integral)
+    return testfunction(expfun, gradh, expargs, ndim, thimbles, thimble_dist, integral)
     

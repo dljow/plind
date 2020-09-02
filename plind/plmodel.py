@@ -5,7 +5,6 @@ from copy import copy
 from .plexception import *
 from .integrate import conintegrate
 from .poles import *
-from .interpolate import *
 from .descend import *
 from .contour import *
 
