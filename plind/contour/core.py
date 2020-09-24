@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.spatial import Delaunay
 import array
+from math import factorial as fact
 
 class contour:
     """A contour (surface) in C^ndim for the purposes of gradient flow and integration.
@@ -87,6 +88,35 @@ class contour:
             norm_diff= np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
         return np.ndarray.flatten(norm_diff)
 
+    # this bit of code is taken directly from quadpy. How does credit work here?
+    def get_vols(self, imag=False):
+        # Compute the volume via the Cayley-Menger determinant
+        # <http://mathworld.wolfram.com/Cayley-MengerDeterminant.html>. One advantage is
+        # that it can compute the volume of the simplex indenpendent of the dimension of the
+        # space in which it is embedded.
+        simps = np.stack(self.points[self.simplices], axis=-2)
+        simplex = np.asarray(simps)
+
+        # compute all edge lengths
+        edges = np.subtract(simplex[:, None], simplex[None, :])
+        ei_dot_ej = np.einsum("...k,...k->...", edges, edges)
+
+        j = simplex.shape[0] - 1
+        a = np.empty((j + 2, j + 2) + ei_dot_ej.shape[2:], dtype=complex)
+        a[1:, 1:] = ei_dot_ej
+        a[0, 1:] = 1.0
+        a[1:, 0] = 1.0
+        a[0, 0] = 0.0
+
+        a = np.moveaxis(a, (0, 1), (-2, -1))
+        det = np.linalg.det(a)
+
+        vol = np.sqrt((-1.0) ** (j + 1) / 2 ** j / fact(j) ** 2 * det)
+        if imag:
+            return vol
+        else:
+            return np.abs(vol)
+
     def rm_reindex(self, arr, bad_point_ind):
         """Given an array of simplices or edges, re-index the array based on the removal of points. This is
            a linear shifting of indices.
@@ -135,7 +165,7 @@ class contour:
                          a certain threshold.
 
         """
-        
+
         used_simps = np.array([], dtype=np.int)
         uni_bad_edges = np.array([], dtype=np.int)
         uni_bad_simps = np.empty((0, self.ndim+1), int)
