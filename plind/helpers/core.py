@@ -1,6 +1,9 @@
 import itertools
 import numpy
 
+def cantor_pairing(a, b):
+    return (0.5*(a+b)*(a+b+1)+b).astype(int)
+    
 # code stolen from quadpy (how do we credit this)?
 def untangle(data):
     weights, points = zip(*data)
@@ -8,7 +11,7 @@ def untangle(data):
         numpy.concatenate(points),
         numpy.repeat(weights, [len(grp) for grp in points]),
     )
-    
+
 # This code stolen from quadpy
 def get_all_exponents(dim, max_degree):
     """Get all exponent combinations of dimension `dim` and maximum degree
