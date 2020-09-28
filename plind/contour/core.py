@@ -16,8 +16,6 @@ class contour:
                   appropriate dimension.
 
            edges: numpy.int16 array
-                  Array of two-element arrays, with integer elements that refer to the points contained in
-                  an edge.
 
            simplices: numpy.int16 array
                   Array of ndim-element arrays, with integer elements that refer to the points contained in
@@ -26,9 +24,9 @@ class contour:
                   The dimension of the complex space, ie. C^ndim.
     """
 
-    def __init__(self, points=np.array([]), edges=np.array([[]]), simplices=np.array([[]])):
+    def __init__(self, points=np.array([]), simplices=np.array([[]])):
         self.points = points
-        self.edges = edges
+        self.edges = np.array([list(itertools.combinations(simp, 2)) for simp in simplices])
         self.simplices = simplices
         self.ndim = simplices.shape[1]-1
 
@@ -58,14 +56,9 @@ class contour:
         tri = Delaunay(points)
         simplices = tri.simplices
 
-        # Extract all possible edge pairs from tesselation
-        edges = np.reshape(np.append(np.append(simplices[:, [0, 1]], simplices[:, [1, 2]]), simplices[:, [2, 0]]), [int(edges.size/2), 2])
-        edges.sort(axis=1)  # put all pairs in ascending order
-        edges = np.unique(edges, axis=0)  # remove duplicates
-
         # Assign all quantities
         self.points = points
-        self.edges = edges
+        self.edges = np.array([list(itertools.combinations(simp, 2)) for simp in simplices])
         self.simplices = simplices
         self.ndim = np.shape(simplices)[1]-1
 
@@ -83,13 +76,19 @@ class contour:
            refine_edges: Refines the edges of a plind.contour to be smaller than a given delta.
 
         """
-        differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-
+    # differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
+    #
+    # if self.ndim == 1:
+    #     norm_diff= np.sqrt(differences**2)
+    # else:
+    #     norm_diff= np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
+    # return np.ndarray.flatten(norm_diff)
+        diff = self.points[self.edges[:, :, 0]] - self.points[self.edges[:, :, 1]]
         if self.ndim == 1:
-            norm_diff= np.sqrt(differences**2)
+            lengths = np.abs(np.sqrt(diff**2))
         else:
-            norm_diff= np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
-        return np.ndarray.flatten(norm_diff)
+            lengths = np.abs(np.sqrt(np.sum([diff[:, :, i]**2 for i in np.arange(diff.shape[2])], axis=0)))
+        return lengths
 
     # this bit of code is taken directly from quadpy. How does credit work here?
     def get_vols(self, imag=False):
@@ -159,11 +158,11 @@ class contour:
                          a certain threshold.
 
         """
-        bad_edge_ind = np.unique(np.array(np.where(np.isin(self.edges, bad_point_ind)))[0])
+        #bad_edge_ind = np.unique(np.array(np.where(np.isin(self.edges, bad_point_ind)))[0])
         bad_simp_ind = np.unique(np.array(np.where(np.isin(self.simplices, bad_point_ind)))[0])
         # remove bad edges and simplices
         self.points = np.delete(self.points, bad_point_ind, axis=0)
-        self.edges = np.delete(self.edges, bad_edge_ind, axis=0)
+        self.edges = np.delete(self.edges, bad_simp_ind, axis=0)
         self.simplices = np.delete(self.simplices, bad_simp_ind, axis=0)
         # Set the indices of the points accordingly
         self.edges = self.rm_reindex(self.edges, bad_point_ind)
@@ -181,14 +180,10 @@ class contour:
 
         """
         # construct edges from simplices and compute lengths
-        t0 = time()
-        edges = np.array([list(itertools.combinations(simp, 2)) for simp in self.simplices])
-        t1 = time()
-
         if self.ndim == 1:
             self.points = self.points.flatten()
 
-        diff = self.points[edges[:, :, 0]] - self.points[edges[:, :, 1]]
+        diff = self.points[self.edges[:, :, 0]] - self.points[self.edges[:, :, 1]]
         if self.ndim == 1:
             lengths = np.abs(np.sqrt(diff**2))
         else:
@@ -198,7 +193,7 @@ class contour:
         where = np.where(lengths > delta)
         if len(where[0]) > 0:
             t2 = time()
-            all_bad_edges = edges[where]
+            all_bad_edges = self.edges[where]
             all_edge_key = cantor_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
 
             # make it so there is only one edge per simplex, and remove secondary edges as flagged edges
@@ -221,16 +216,19 @@ class contour:
             A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
             B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
             new_simps = np.concatenate([A, B])
+            new_edges = np.array([list(itertools.combinations(simp, 2)) for simp in new_simps])
 
             self.simplices = np.concatenate([np.delete(self.simplices, bad_simp_ind, axis=0), new_simps])
             self.points = np.concatenate([self.points, new_pnts])
+            self.edges = np.concatenate([np.delete(self.edges, bad_simp_ind, axis=0), new_edges])
+
 
             if self.ndim == 1:
                 self.points = self.points[:, None]
             t3 = time()
-            print('edge reconstruction: ', t1-t0, ', refinement: ', t3-t2)
+            print('refinement: ', t3-t2)
 
         else:
-            
+
             if self.ndim == 1:
                 self.points = self.points[:, None]
