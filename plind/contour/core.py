@@ -4,6 +4,7 @@ import array
 from math import factorial as fact
 import itertools
 from ..helpers import *
+from ..helpers.core import cantor_pairing
 from time import time
 
 class contour:
