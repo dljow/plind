@@ -16,11 +16,15 @@ class contour:
                   Array of points in N-dimensional complex space, where each point is a numpy array of the
                   appropriate dimension.
 
-           edges: numpy.int16 array
+           edges: numpy.int array
+                  (M, (ndim+1) choose 2, 2)-array, where each (ndim+1 choose 2, 2)-subarray is a list of edges,
+                  where each edge is a tuple of integers referring to the indices in self.points of the points
+                  comprising the edge
 
-           simplices: numpy.int16 array
-                  Array of ndim-element arrays, with integer elements that refer to the points contained in
-                  an edge.
+           simplices: numpy.int array
+                  (M, (ndim+1))-array, where each element is a list of integers referring to the indices in
+                  self.points of the points comprising a simplex. There are M simplices.
+
            ndim: int
                   The dimension of the complex space, ie. C^ndim.
     """
@@ -70,20 +74,10 @@ class contour:
            -------
 
            norm_diff: np.float64 array
-                     Numpy array of the lengths of the edges.
-
-           See Also
-           --------
-           refine_edges: Refines the edges of a plind.contour to be smaller than a given delta.
+                (M, ndim+1 choose 2)-array, where each element is a list of (ndim+1 choose 2) values
+                corresponding to the lengths of the edges in each simplex
 
         """
-    # differences = (self.points[self.edges][:, 0] - self.points[self.edges][:, 1])
-    #
-    # if self.ndim == 1:
-    #     norm_diff= np.sqrt(differences**2)
-    # else:
-    #     norm_diff= np.sqrt(np.sum([differences[:, i]**2 for i in np.arange(0, self.ndim)], 0))
-    # return np.ndarray.flatten(norm_diff)
         diff = self.points[self.edges[:, :, 0]] - self.points[self.edges[:, :, 1]]
         if self.ndim == 1:
             lengths = np.abs(np.sqrt(diff**2))
@@ -93,10 +87,22 @@ class contour:
 
     # this bit of code is taken directly from quadpy. How does credit work here?
     def get_vols(self, imag=False):
-        # Compute the volume via the Cayley-Menger determinant
-        # <http://mathworld.wolfram.com/Cayley-MengerDeterminant.html>. One advantage is
-        # that it can compute the volume of the simplex indenpendent of the dimension of the
-        # space in which it is embedded.
+        """Compute the volume of the simplices via the Cayley-Menger determinant
+
+           Parameters
+           ----------
+
+           imag: bool
+               If False, the real-valued volume will be computed for simplices embedded in R^(2*ndim).
+               If True, the volume will be imaginary and will be computed for simplices embedded in C^(ndim)
+
+        Returns
+        -------
+
+           vol: np.float array / np.complex array
+                List of volumes associated with each simplex in self.simplices. If imag==True the volumes
+                will be complex valued.
+        """
         simps = np.stack(self.points[self.simplices], axis=-2)
         simplex = np.asarray(simps)
 
