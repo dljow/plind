@@ -153,7 +153,10 @@ class plmodel:
 
             # remove points from the contour for which self.expfun evaluated at those points
             # is below the threshold
-            hval = h(self.contour.points.T, *self.expargs)
+            if self.ndim == 1:
+                hval = h(self.contour.points[:,None], *self.expargs)
+            else:
+                hval = h(self.contour.points.T, *self.expargs)
             bad_points = np.where(hval < thresh)[0]  # find the points to remove
             if len(bad_points) > 0:
                 self.contour.remove_points(bad_points)  # remove points

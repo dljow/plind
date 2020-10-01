@@ -220,8 +220,10 @@ class contour:
             new_pnts = (self.points[uni_bad_edges[:, 0]] + self.points[uni_bad_edges[:, 1]])/2
             newpnts_inds = np.array([np.where(uni_edge_key == i)[0][0] for i in edge_key]) + len(self.points)
 
-            A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
-            B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
+            A = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:,0][:,None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
+            B = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:,1][:,None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
+            #A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
+            #B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
             new_simps = np.concatenate([A, B])
             new_edges = np.array([list(itertools.combinations(simp, 2)) for simp in new_simps])
 
