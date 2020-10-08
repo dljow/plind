@@ -61,6 +61,10 @@ class plmodel:
         self.integral = None
         self.critpts = []
         self.poles = []   # Identifies regions of the contour that may contain poles.
+        # Parameters used in last descent call
+        self.dt = None
+        self.delta = None
+        self.thresh = None
 
     # Simple functions for retrieving attributes
     def get_contour(self):
@@ -171,7 +175,11 @@ class plmodel:
             t += dt
             i += 1
         Nstep = i
-        print('total steps:', Nstep, 'current time:',t)
+        # Store descend parameters
+        self.dt = dt
+        self.thresh = thresh
+        self.delta = delta
+        print('total steps:', Nstep, 'current time:', t)
 
 
     def integrate(self, intfun=None):

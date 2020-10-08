@@ -5,7 +5,6 @@ from math import factorial as fact
 import itertools
 from ..helpers import *
 from ..helpers.core import cantor_pairing
-from time import time
 
 class contour:
     """A contour (surface) in C^ndim for the purposes of gradient flow and integration.
@@ -199,7 +198,6 @@ class contour:
         # find edges that exceed delta
         where = np.where(lengths > delta)
         if len(where[0]) > 0:
-            t2 = time()
             all_bad_edges = self.edges[where]
             all_edge_key = cantor_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
 
@@ -235,8 +233,7 @@ class contour:
 
             if self.ndim == 1:
                 self.points = self.points[:, None]
-            t3 = time()
-            print('refinement: ', t3-t2)
+
 
         else:
 
