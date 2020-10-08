@@ -148,16 +148,20 @@ class contour:
            remove_points: Removes the points at the indices bad_point_ind from the contour.
 
         """
+        # make a set for speed purposes
         bad_point_ind_set = set(bad_point_ind)
         amount_to_subtract = []
         counter = 0
 
+        # loop once of all the possible indices in arr, if there is a bad index,
+        # i know which position it's at, and how many bad indices there are below it
         for val in range(np.max(arr)+1):
             if val in bad_point_ind_set:
                 counter += 1
             amount_to_subtract.append(counter)
         amount_to_subtract = np.array(amount_to_subtract)
 
+        # arr then indexes amount_to_subtract for how much to subtract
         arr = arr - amount_to_subtract[arr]
         return arr
 
