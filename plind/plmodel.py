@@ -122,6 +122,13 @@ class plmodel:
             return np.real(self.expfun(z, *args))
         return morse
 
+    def get_intval(self):
+        if intfun is None:
+            self.intfun = self.get_intfun()
+        else:
+            self.intfun = intfun
+        return self.intfun(self.contour.points.T, *self.expargs)
+
     # Functions for performing the PL integration
     def descend(self, delta, thresh, tmax, dt_init):
         """Deform the contour according to the Picard-Lefschetz rule (flow the points along the gradient of the Morse function).
