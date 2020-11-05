@@ -250,7 +250,7 @@ class contour:
             if self.ndim == 1:
                 self.points = self.points[:, None]
             t3 = time()
-            print('refinement: ', t3-t2)
+            #print('refinement: ', t3-t2)
 
         else:
 
