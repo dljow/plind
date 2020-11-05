@@ -5,6 +5,7 @@ from math import factorial as fact
 import itertools
 from ..helpers import *
 from ..helpers.core import cantor_pairing
+from time import time
 
 class contour:
     """A contour (surface) in C^ndim for the purposes of gradient flow and integration.
