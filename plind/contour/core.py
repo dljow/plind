@@ -4,7 +4,7 @@ import array
 from math import factorial as fact
 import itertools
 from ..helpers import *
-from ..helpers.core import cantor_pairing
+from ..helpers.core import unordered_pairing
 from time import time
 
 class contour:
@@ -209,7 +209,7 @@ class contour:
         if len(where[0]) > 0:
             t2 = time()
             all_bad_edges = self.edges[where]
-            all_edge_key = cantor_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
+            all_edge_key = unordered_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
 
             # make it so there is only one edge per simplex, and remove secondary edges as flagged edges
             bad_simp_ind, prim_edge_ind = np.unique(where[0], return_index=True)
