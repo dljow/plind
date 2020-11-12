@@ -238,7 +238,7 @@ class contour:
             # A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
             # B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
             new_simps = np.concatenate([A, B])
-            new_edges = np.rollaxis(new_simps.T[np.transpose(np.triu_indices(self.ndim+1, 1))], -1)
+            new_edges = np.rollaxis(new_simps.T[np.transpose(np.triu_indices(self.ndim+1, 1))], -1) # this line is a bit of black magic, it's from https://stackoverflow.com/questions/16003217/n-d-version-of-itertools-combinations-in-numpy
 
             self.simplices = np.concatenate([np.delete(self.simplices, bad_simp_ind, axis=0), new_simps])
             self.points = np.concatenate([self.points, new_pnts])

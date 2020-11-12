@@ -15,20 +15,20 @@ def get_vol(simplex):
     # space in which it is embedded.
 
     # compute all edge lengths
-    edges = numpy.subtract(simplex[:, None], simplex[None, :])
-    ei_dot_ej = numpy.einsum("...k,...k->...", edges, edges)
+    edges = np.subtract(simplex[:, None], simplex[None, :])
+    ei_dot_ej = np.einsum("...k,...k->...", edges, edges)
 
     j = simplex.shape[0] - 1
-    a = numpy.empty((j + 2, j + 2) + ei_dot_ej.shape[2:], dtype=complex)
+    a = np.empty((j + 2, j + 2) + ei_dot_ej.shape[2:], dtype=complex)
     a[1:, 1:] = ei_dot_ej
     a[0, 1:] = 1.0
     a[1:, 0] = 1.0
     a[0, 0] = 0.0
 
-    a = numpy.moveaxis(a, (0, 1), (-2, -1))
-    det = numpy.linalg.det(a)
+    a = np.moveaxis(a, (0, 1), (-2, -1))
+    det = np.linalg.det(a)
 
-    vol = numpy.sqrt((-1.0) ** (j + 1) / 2 ** j / fact(j) ** 2 * det)
+    vol = np.sqrt((-1.0) ** (j + 1) / 2 ** j / fact(j) ** 2 * det)
     return vol
 
 
@@ -45,7 +45,7 @@ def grundmann_moeller_integrate(f, contour, order):
                 (-1) ** i * 2 ** (-2 * s) * (d + n - 2 * i) ** d,
                 fact(i) * fact(d + n - i),
             ),
-            numpy.array(
+            np.array(
                 [
                     [frac(2 * p + 1, d + n - 2 * i) for p in part]
                     for part in exponents[s - i]
