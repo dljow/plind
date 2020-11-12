@@ -1,15 +1,19 @@
 import itertools
-import numpy
+import numpy as np
 
 def cantor_pairing(a, b):
     return (0.5*(a+b)*(a+b+1)+b).astype(int)
-    
+
+# from https://gist.github.com/quantumfx/3cd2c3c4f673baddf76667975ea6589a
+def unordered_pairing(a, b):
+    return ((a+1) * (b+1)).astype(int) + ((np.abs(a - b) - 1)**2 / 4).astype(int)
+
 # code stolen from quadpy (how do we credit this)?
 def untangle(data):
     weights, points = zip(*data)
     return (
-        numpy.concatenate(points),
-        numpy.repeat(weights, [len(grp) for grp in points]),
+        np.concatenate(points),
+        np.repeat(weights, [len(grp) for grp in points]),
     )
 
 # This code stolen from quadpy
@@ -55,14 +59,14 @@ def get_all_exponents(dim, max_degree):
         # vals0 = vals * x[0]
 
         out += [[0] + e for e in out1]
-        # out_vals = numpy.concatenate([vals0, vals1])
+        # out_vals = np.concatenate([vals0, vals1])
         return out
 
     # dim = x.shape[0]
 
     # Initialization, level 0
     exponents = [dim * [0]]
-    # vals = numpy.array(numpy.ones(x.shape[1:]))
+    # vals = np.array(np.ones(x.shape[1:]))
 
     # all_vals = []
     all_exponents = []

@@ -4,7 +4,7 @@ import array
 from math import factorial as fact
 import itertools
 from ..helpers import *
-from ..helpers.core import cantor_pairing
+from ..helpers.core import unordered_pairing
 from time import time
 
 class contour:
@@ -214,7 +214,7 @@ class contour:
         where = np.where(lengths > delta)
         if len(where[0]) > 0:
             all_bad_edges = self.edges[where]
-            all_edge_key = cantor_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
+            all_edge_key = unordered_pairing(all_bad_edges[:, 0], all_bad_edges[:, 1])  # unique indetifier for each edge
 
             # make it so there is only one edge per simplex, and remove secondary edges as flagged edges
             bad_simp_ind, prim_edge_ind = np.unique(where[0], return_index=True)
@@ -231,15 +231,14 @@ class contour:
             uni_bad_edges = bad_edges[unique_inds]
 
             new_pnts = (self.points[uni_bad_edges[:, 0]] + self.points[uni_bad_edges[:, 1]])/2
-            # newpnts_inds = np.array([np.where(uni_edge_key == i)[0][0] for i in edge_key]) + len(self.points)
-            newpnts_inds = np.where(uni_edge_key == edge_key[:, None])[1] + len(self.points)
+            newpnts_inds = np.unique(edge_key,return_inverse=True)[1] + len(self.points)
 
             A = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:, 0][:, None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
             B = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:, 1][:, None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
             # A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
             # B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
             new_simps = np.concatenate([A, B])
-            new_edges = np.array([list(itertools.combinations(simp, 2)) for simp in new_simps])
+            new_edges = np.rollaxis(new_simps.T[np.transpose(np.triu_indices(self.ndim+1, 1))], -1)
 
             self.simplices = np.concatenate([np.delete(self.simplices, bad_simp_ind, axis=0), new_simps])
             self.points = np.concatenate([self.points, new_pnts])
