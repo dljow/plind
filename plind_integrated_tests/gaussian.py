@@ -1,4 +1,4 @@
-from .testfunction import *
+from testfunction import *
 import numpy as np
 
 
