@@ -1,5 +1,5 @@
 # python notebook
-sandbox.ipynb
+*.ipynb
 
 # mac stuff
 .DS_Store

@@ -1,4 +1,4 @@
-# Loads python environment
+# Loads python environment on CITA/mussel
 
 source venv-3.6.4/bin/activate
 module load python/3.6.4
