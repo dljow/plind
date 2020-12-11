@@ -11,7 +11,7 @@ from .contour import *
 class plmodel:
     """Perform Picard-Lefschetz integration for a given oscillatory integrand and initial contour in C^ndim.
 
-    A plmodel object takes a oscillatory integrand of the form exp(iS) and an initial contour, and has
+    A plmodel object takes an oscillatory integrand of the form exp(iS) and an initial contour, and has
     methods to deform the initial contour according towards the Lefschetz thimbles (contours along which
     the integral is no longer oscillatory). Plmodel also has methods to then integrate the integrand
     over the deformed contour.
@@ -37,13 +37,18 @@ class plmodel:
         trajectory: array<plind.contour.core.contour>
             A list of contours. When plmodel.descend() is called, the contour at each time step is
             appended to trajectory so that the deformation history of the contour is tracked.
-        integral: float
-            The value of the integral. Default is None. When plmodel.integrate(), integral is updated
+        integral: tuple<complex>
+            Tuple containing the value of the integral and an associated error. Default is None. When plmodel.integrate() is called integral is updated
             to be the value of the integral at the current contour.
-        critpts: array
-            Currently this is [] as a default, and nothing does anything to change that.
-        poles: array
-            Currently this is [] as a default, and nothing does anything to change that.
+        dt: float
+            Default is None, but is updated when plmodel.descend() is called to be the current timestep
+            parameter for the descent algorithm.
+        delta: float
+            Default is None, but is updated when plmodel.descend() is called to be the delta parameter
+            used in calling that function.
+        thresh: float
+            Default is None, but is updated when plmodel.descend() is called to be the thresh parameter
+            used in calling that function.
 
     """
 
@@ -54,13 +59,10 @@ class plmodel:
         self.expargs = expargs
         if np.shape(self.expargs) == ():
             self.expargs = [self.expargs]
-
         self.ndim = contour.simplices.shape[1]-1  # ndim = number of vertices in simplex minus 1
         self.trajectory = np.array([copy(contour)])
         self.integral = None
-        self.critpts = []
-        self.poles = []   # Identifies regions of the contour that may contain poles.
-        # Parameters used in last descent call
+        # Parameters used in last plmodel.descend() call
         self.dt = None
         self.delta = None
         self.thresh = None
@@ -80,20 +82,6 @@ class plmodel:
 
     def get_integral(self):
         return self.integral
-
-    # Functions for getting things that are derived from the attributes
-    def get_poles(self):
-        """Return location of poles and values of the integrand at the poles.
-
-        Returns
-        -------
-            poles: ndarray
-                array containing the coordinates of the poles
-            vals: ndarray
-                array containing the intfun = plmodel.get_intfun evaluated at the poles.
-
-        """
-        return self.poles, self.intfun(self.poles, *self.expargs)
 
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, *self.expargs)).
@@ -143,6 +131,8 @@ class plmodel:
                 The time to integrate the flow equation to.
             dt_init: float
                 The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during the flow, and total number of steps is celing(tmax/dt_init).
+            verbose: bool
+                If True, will print the total steps/time taken to descend.
         """
         h = self.get_morse()  # get the Morse function, h = real(expfun)
         gradh = self.grad
@@ -187,9 +177,8 @@ class plmodel:
 
 
     def integrate(self, intfun=None):
-        """Perform contour integration along the current contour.
-
-        (!!!) Need to specify what kind of integration we are doing
+        """Perform contour integration along the current contour, using the Grundmann-Moeller
+        method for integration of simplices.
 
         When called, plmodel.integrate() performs the contour integration and updates plmodel.integral to be
         the result of the integration.
