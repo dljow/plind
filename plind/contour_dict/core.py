@@ -1,5 +1,5 @@
 import numpy as np
-from .contour import *
+from ..contour import *
 from scipy.spatial import Delaunay
 import itertools
 
