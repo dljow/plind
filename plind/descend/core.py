@@ -1,5 +1,4 @@
 import numpy as np
-from ..projection import *
 
 def identify_pole(points, gradh, dt, expargs, thresh=10):
     # performs Euler time step

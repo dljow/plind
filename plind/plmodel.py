@@ -4,7 +4,6 @@ from scipy.integrate import fixed_quad
 from copy import copy
 from .plexception import *
 from .integrate import conintegrate
-from .poles import *
 from .descend import *
 from .contour import *
 

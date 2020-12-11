@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 # conintegrate.py - performs contour integral
 import numpy as np
-from ..projection import *
 from ..helpers import *
-#import quadpy
 from sympy import Rational as frac
 from math import factorial as fact
 
