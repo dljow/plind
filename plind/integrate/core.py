@@ -6,30 +6,6 @@ from sympy import Rational as frac
 from math import factorial as fact
 
 # this bit of code is taken directly from quadpy. How does credit work here?
-def get_vol(simplex):
-    # Compute the volume via the Cayley-Menger determinant
-    # <http://mathworld.wolfram.com/Cayley-MengerDeterminant.html>. One advantage is
-    # that it can compute the volume of the simplex indenpendent of the dimension of the
-    # space in which it is embedded.
-
-    # compute all edge lengths
-    edges = np.subtract(simplex[:, None], simplex[None, :])
-    ei_dot_ej = np.einsum("...k,...k->...", edges, edges)
-
-    j = simplex.shape[0] - 1
-    a = np.empty((j + 2, j + 2) + ei_dot_ej.shape[2:], dtype=complex)
-    a[1:, 1:] = ei_dot_ej
-    a[0, 1:] = 1.0
-    a[1:, 0] = 1.0
-    a[0, 0] = 0.0
-
-    a = np.moveaxis(a, (0, 1), (-2, -1))
-    det = np.linalg.det(a)
-
-    vol = np.sqrt((-1.0) ** (j + 1) / 2 ** j / fact(j) ** 2 * det)
-    return vol
-
-
 def grundmann_moeller_integrate(f, contour, order):
     s = order
     n = contour.ndim
@@ -58,7 +34,7 @@ def grundmann_moeller_integrate(f, contour, order):
     flt = np.vectorize(float)
     simplex = np.asarray(simps)
     x = np.dot(simplex.T, flt(points).T)
-    vol = get_vol(simplex)
+    vol = contour.get_vols(imag=True)
 
     fx = np.asarray(f(x))
     assert (
