@@ -4,7 +4,6 @@ from scipy.integrate import fixed_quad
 from copy import copy
 from .plexception import *
 from .integrate import conintegrate
-from .poles import *
 from .descend import *
 from .contour import *
 
@@ -122,15 +121,12 @@ class plmodel:
             return np.real(self.expfun(z, *args))
         return morse
 
-    def get_intval(self):
-        if intfun is None:
-            self.intfun = self.get_intfun()
-        else:
-            self.intfun = intfun
-        return self.intfun(self.contour.points.T, *self.expargs)
+    def get_morsevals(self):
+        h = self.get_morse()
+        return h(self.contour.points.T, *self.expargs).flatten()
 
     # Functions for performing the PL integration
-    def descend(self, delta, thresh, tmax, dt_init):
+    def descend(self, delta, thresh, tmax, dt_init, verbose=True):
         """Deform the contour according to the Picard-Lefschetz rule (flow the points along the gradient of the Morse function).
 
         Upon calling plmodel.descend(), the contour is deformed along the gradient of the Morse function with an adaptive mesh
@@ -186,7 +182,8 @@ class plmodel:
         self.dt = dt
         self.thresh = thresh
         self.delta = delta
-        print('total steps:', Nstep, 'current time:', t)
+        if verbose:
+            print('total steps:', Nstep, 'current time:', t)
 
 
     def integrate(self, intfun=None):
@@ -213,7 +210,7 @@ class plmodel:
 
         # Estimate error from having too large a value for thresh
         if self.thresh != None:
-            self.descend(self.delta, 10*self.thresh, 2*self.dt, self.dt)
+            self.descend(self.delta, 10*self.thresh, 2*self.dt, self.dt, verbose=False)
             integral1 = conintegrate(self.intfun, self.contour, args=self.expargs)[0]
             thresh_err = 2*np.abs(integral-integral1)
 

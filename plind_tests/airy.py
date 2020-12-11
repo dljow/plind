@@ -26,7 +26,7 @@ def Airy(ndim):
        Parameters
        ----------
         ndim: integer
-            The dimension of the Airy.
+            The dimension of the Airy function.
             
        Returns
        ----------
