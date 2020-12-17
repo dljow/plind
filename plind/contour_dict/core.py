@@ -5,24 +5,52 @@ import itertools
 
 # returns contour for a Delaunay triangulation of Rn
 
-def realcontour_nd(N, domain):
+def realcontour_nd(N, domain, rotation=0.):
+    """Initialize a contour object over R^ndim based on the domain given, with N points along
+       each edge.
+       
+           Parameters
+           ----------
+
+           N: integer
+              The number of points along each edge, that is the domain runs from 
+                  
+           domain: (2*ndim) tuple of floats 
+              Describes the start, end of every dimension of the square, that is
+              (x1min, x1max, x2min, x2max, ...)
+              
+           rotation: float in (0, 2pi)
+              Rotates the contour into the complex plane. 
+
+           Returns
+           -------
+           plind.contour Object
+
+
+           See Also
+           --------
+
+            __init__: Initializes a plind.contour given points, edges, and simplices.
+
+    """
+    # Construct the grid
     ndim = int(len(domain)//2)
     linspaces = []
     for i in np.arange(ndim):
         linspaces.append(np.linspace(domain[i], domain[i+1], N))
     R = np.meshgrid(*linspaces)
+    
+    # Flatten for use with Delaunay
     flattened_comps = []
     for comp in R:
         flattened_comps.append(comp.flatten())
     points = np.dstack(flattened_comps)[0]
-    # width = abs(domain[1]-domain[0])
-    # points = np.random.rand(N**ndim, ndim)*width - 0.5*width
+    
+    # Use Delaunay to get simplices
     tri = Delaunay(points)
-    #print(tri.simplices)
 
-
-    #remove duplicates
-    ctr = contour(points+0*1j, tri.simplices)
+    # Construct contour object
+    ctr = contour(points*np.exp(1j*rotation)+0*1j, tri.simplices)
     return ctr
 
 
