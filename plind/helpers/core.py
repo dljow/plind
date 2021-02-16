@@ -1,8 +1,4 @@
-import itertools
 import numpy as np
-
-def cantor_pairing(a, b):
-    return (0.5*(a+b)*(a+b+1)+b).astype(int)
 
 # from https://gist.github.com/quantumfx/3cd2c3c4f673baddf76667975ea6589a
 def unordered_pairing(a, b):
