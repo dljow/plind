@@ -1,9 +1,7 @@
 # python notebook
-*.ipynb
 
 # mac stuff
 .DS_Store
-*.ipynb
 # renders
 *.png
 *.pdf
