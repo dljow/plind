@@ -4,14 +4,18 @@ from scipy.integrate import fixed_quad
 from copy import copy
 from .plexception import *
 from .integrate import conintegrate
+from .visualize import *
 from .descend import *
 from .contour import *
+
+from matplotlib.animation import FuncAnimation
+
 
 
 class plmodel:
     """Perform Picard-Lefschetz integration for a given oscillatory integrand and initial contour in C^ndim.
 
-    A plmodel object takes a oscillatory integrand of the form exp(iS) and an initial contour, and has
+    A plmodel object takes an oscillatory integrand of the form exp(iS) and an initial contour, and has
     methods to deform the initial contour according towards the Lefschetz thimbles (contours along which
     the integral is no longer oscillatory). Plmodel also has methods to then integrate the integrand
     over the deformed contour.
@@ -70,15 +74,16 @@ class plmodel:
         self.expargs = expargs
         if np.shape(self.expargs) == ():
             self.expargs = [self.expargs]
-
         self.ndim = contour.simplices.shape[1]-1  # ndim = number of vertices in simplex minus 1
         self.trajectory = np.array([copy(contour)])
         self.integral = None
-        
-        # Parameters used in last descent call
+
+        # Parameters used in last plmodel.descend() call
+
         self.dt = None
         self.delta = None
         self.thresh = None
+
 
     def get_intfun(self):
         """Return integrand function, i.e. np.exp(self.expfun(z, *self.expargs)).
@@ -139,7 +144,9 @@ class plmodel:
                 The time to integrate the flow equation to.
                 
             dt_init: float
-                The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during                   the flow, and total number of steps is celing(tmax/dt_init).
+                The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during the flow, and total number of steps is celing(tmax/dt_init).
+            verbose: bool
+                If True, will print the total steps/time taken to descend.
         """
         h = self.get_morse()  # get the Morse function, h = real(expfun)
         gradh = self.grad
@@ -206,8 +213,7 @@ class plmodel:
         integral, gm_err = conintegrate(self.intfun, self.contour, args=self.expargs)
 
         # Estimate error from having too large a value for thresh
-        if self.thresh != None:
-            # Descend with 10* the value of thresh, estimate the error
+        if self.thresh >= -20:
             self.descend(self.delta, 10*self.thresh, 2*self.dt, self.dt, verbose=False)
             integral1 = conintegrate(self.intfun, self.contour, args=self.expargs)[0]
             thresh_err = 2*np.abs(integral-integral1)
@@ -216,3 +222,34 @@ class plmodel:
             self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
         else:
             self.integral = (integral, gm_err)
+
+    def visualize(self, *args, **kwargs):
+        """Plots the contour at the specified step in the evolution.
+
+        plmodel.visualize() generates a plot of the final contour. Right now, it
+        only supports a 1D visualization.
+
+        Parameters
+        ----------
+            step: int, optional
+                Which step in the evolution to plot. Default is -1 corresponding to the final step.
+
+            with_background: bool, optional
+                Whether to plot the morse function as the background. Default is True.
+
+            with_contour: bool, optional
+                Whether to plot contours of constant Imag(iS) as a visual guide. Default is True.
+
+            with_thresh: bool, optional
+                Whether to plot the integration threshold thresh. Default is True.
+
+        """
+        if self.ndim == 1:
+            plt.figure(figsize=(3.5,3.3))
+            plot_1d(self, *args, **kwargs)
+            plt.show()
+        elif self.ndim == 2:
+            print('2D viz WIP')
+            pass
+        else:
+            print('Only 1D and 2D visualizations supported')

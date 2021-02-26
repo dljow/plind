@@ -1,4 +1,4 @@
-## Contains flaggable exceptions for plmodel.py
+# Contains flaggable exceptions for plmodel.py
 
 
 class DescendError(Exception):
@@ -14,5 +14,3 @@ class PoleError(Exception):
 
     def __str__(self):
         return repr(self.msg)
-
-

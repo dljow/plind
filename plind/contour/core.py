@@ -1,11 +1,8 @@
 import numpy as np
 from scipy.spatial import Delaunay
-import array
 from math import factorial as fact
 import itertools
-from ..helpers import *
 from ..helpers.core import unordered_pairing
-from time import time
 
 class contour:
     """A contour (surface) in C^ndim for the purposes of gradient flow and integration.
@@ -235,8 +232,7 @@ class contour:
 
             A = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:, 0][:, None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
             B = np.hstack([newpnts_inds[:, None], bad_simps[np.where(bad_simps != bad_edges[:, 1][:, None])].reshape(bad_simps.shape[0], bad_simps.shape[1]-1)])
-            # A = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e0)] for simp, e0 in zip(bad_simps, bad_edges[:, 0])])])
-            # B = np.hstack([newpnts_inds[:, None], np.array([simp[np.where(simp != e1)] for simp, e1 in zip(bad_simps, bad_edges[:, 1])])])
+
             new_simps = np.concatenate([A, B])
             new_edges = np.rollaxis(new_simps.T[np.transpose(np.triu_indices(self.ndim+1, 1))], -1) # this line is a bit of black magic, it's from https://stackoverflow.com/questions/16003217/n-d-version-of-itertools-combinations-in-numpy
 
@@ -247,8 +243,6 @@ class contour:
 
             if self.ndim == 1:
                 self.points = self.points[:, None]
-            t3 = time()
-            #print('refinement: ', t3-t2)
 
         else:
 
