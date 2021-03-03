@@ -5,8 +5,15 @@ from ..helpers import *
 from sympy import Rational as frac
 from math import factorial as fact
 
-# this bit of code is taken directly from quadpy. How does credit work here?
+
 def grundmann_moeller_integrate(f, contour, order):
+    '''Implementation of the Grundmann-Moeller integration scheme from
+
+        Source code: quadpy
+        Author: Nico Schlomer
+        Code version: 0.16.6
+        Availability: https://github.com/nschloe/quadpy'''
+
     s = order
     n = contour.ndim
     simps = np.stack(contour.points[contour.simplices], axis=-2)

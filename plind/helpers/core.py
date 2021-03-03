@@ -4,7 +4,7 @@ import numpy as np
 def unordered_pairing(a, b):
     return ((a+1) * (b+1)).astype(int) + ((np.abs(a - b) - 1)**2 / 4).astype(int)
 
-# code stolen from quadpy (how do we credit this)?
+
 def untangle(data):
     weights, points = zip(*data)
     return (
@@ -12,16 +12,17 @@ def untangle(data):
         np.repeat(weights, [len(grp) for grp in points]),
     )
 
-# This code stolen from quadpy
 def get_all_exponents(dim, max_degree):
     """Get all exponent combinations of dimension `dim` and maximum degree
     `max_degree`. This method is actually meant for evaluating all polynomials
     with these exponents.
 
-    This problem is similar to the weak_compositions, e.g.,
-    <https://stackoverflow.com/a/36748940/353337>. The solution here, however,
-    only ever adds 1, making it better suited for a possible extension with
-    actual polynomial evaluation.
+    This function is used in the Grundman-Moeller integration scheme and is from
+
+    Source code: quadpy
+    Author: Nico Schlomer
+    Code version: 0.16.6
+    Availability: https://github.com/nschloe/quadpy
     """
 
     def augment(exponents):
