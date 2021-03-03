@@ -20,10 +20,10 @@ import matplotlib.pyplot as plt
 # ----------------------------------------------
 
 TOL= 10**-5 # tolerance demanded from previous functions
-DIST= 10**-2 # sum total distance of the Lefshetz thimble endpoints from each other between the steps 
+DIST= 10**-2 # sum total distance of the Lefshetz thimble endpoints from each other between the steps
 
 CRITRAD = 3 # radius around which we want the critical points to be populated
-PERCENT = 50 # expected percent threshold of points within CRITRAD of the critical points 
+PERCENT = 50 # expected percent threshold of points within CRITRAD of the critical points
 
 # Maxiumum Step:
 minstep= 1200 #the step size after which we expect convergence
@@ -44,7 +44,7 @@ gradh= lambda x,lamb: plfun.gradh(hfun, x, lamb)
 # ----------------------------------------------
 # Test Suite
 #
-# ----------------------------------------------  
+# ----------------------------------------------
 
 
 class TestInftyPts(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestInftyPts(unittest.TestCase):
         def test_domainconverge(self):
         # Tests that the trajectory of the gradient flow remains roughly constant after an increase to 10000 iterates
            domain= np.linspace(-10,10, 100)
-           domain_model = plmodel(domain, expfun, expargs=[lamb])
+           domain_model = plmodel(domain, expfun, gradh, expargs=[lamb])
            step_range= np.linspace(minstep, maxstep, 10)
            domain_model.descend(0, minstep-100)
            last_contour= domain_model.get_contour()
@@ -63,16 +63,16 @@ class TestInftyPts(unittest.TestCase):
                    # check differences of the two endpoints
                    domain_model.contour = domain
                    domain_model.descend(0, end_time)
-                   current_contour= domain_model.contour 
+                   current_contour= domain_model.contour
                    diff = abs(current_contour[0] - last_contour[0])+ abs(current_contour[-1]-last_contour[-1])
                    self.assertTrue(diff < DIST)
                    last_contour= current_contour
 
 
-        def test_critpt_pop(self): 
+        def test_critpt_pop(self):
         # Tests that the contour remains well-populated amoung critical points
            domain= np.linspace(-10,10, 100)
-           domain_model = plmodel(domain, expfun, expargs=[lamb])
+           domain_model = plmodel(domain, expfun, gradh, expargs=[lamb])
            domain_model.descend(0, minstep)
 
            line = domain_model.contour

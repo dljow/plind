@@ -8,19 +8,19 @@ import itertools
 def realcontour_nd(N, domain, rotation=0.):
     """Initialize a contour object over R^ndim based on the domain given, with N points along
        each edge.
-       
+
            Parameters
            ----------
 
            N: integer
-              The number of points along each edge, that is the domain runs from 
-                  
-           domain: (2*ndim) tuple of floats 
+              The number of points along each edge, that is the domain runs from
+
+           domain: (2*ndim) tuple of floats
               Describes the start, end of every dimension of the square, that is
               (x1min, x1max, x2min, x2max, ...)
-              
+
            rotation: float in (0, 2pi)
-              Rotates the contour into the complex plane. 
+              Rotates the contour into the complex plane.
 
            Returns
            -------
@@ -39,13 +39,13 @@ def realcontour_nd(N, domain, rotation=0.):
     for i in np.arange(ndim):
         linspaces.append(np.linspace(domain[i], domain[i+1], N))
     R = np.meshgrid(*linspaces)
-    
+
     # Flatten for use with Delaunay
     flattened_comps = []
     for comp in R:
         flattened_comps.append(comp.flatten())
     points = np.dstack(flattened_comps)[0]
-    
+
     # Use Delaunay to get simplices
     tri = Delaunay(points)
 
@@ -59,51 +59,10 @@ def realcontour_nd(N, domain, rotation=0.):
 def realcontour_1D(N, domain):
     points = np.linspace(domain[0], domain[1], N)
     simplices = np.array([[j, j+1] for j in np.arange(0, len(points)-1)])
-    points = np.reshape(points, [N,1])
+    points = np.reshape(points, [N, 1])
 
     return contour(points, simplices)
 
-# returns an equilateral triangle tesselation of R2
-# def equilateral_real(N, domain):
-#     """returns an equilateral triangle tesselation of R2"""
-#     ctr = contour()
-#     grid_x, grid_y = np.meshgrid(np.linspace(domain[0], domain[1], N), np.linspace(domain[2], domain[3], N), indexing='xy')
-#     delta = abs(domain[1]-domain[0])/N
-#     offset = np.ones(grid_x.shape)*delta
-#     for i in np.arange(0, N):
-#         if (i+1) % 2 != 0:
-#             offset[i, :] = 0
-#     grid_x = grid_x + offset
-#     ctr.points = np.array([grid_x.flatten(), grid_y.flatten()]).T
-#     edges = []
-#     for i in np.arange(0, N-1):
-#         if i % 2 == 0:
-#             edges.append([i*N, (i+1)*N])
-#             for j in np.arange(1, N):
-#                 edges.append([i*N+j, i*N+j-1])
-#                 edges.append([i*N+j, (i+1)*N+j-1])
-#                 edges.append([i*N+j, (i+1)*N+j])
-#         elif i % 2 != 0:
-#             edges.append([i*N+N-1, (i+1)*N+N-1])
-#             for j in np.arange(0, N-1):
-#                 edges.append([i*N+j, (i+1)*N+j])
-#                 edges.append([i*N+j, i*N+j+1])
-#                 edges.append([i*N+j, (i+1)*N+j+1])
-#     for j in np.arange(0, N-1):
-#         edges.append([(N-1)*N+j, (N-1)*N+j+1])
-#     simplices = []
-#     for i in np.arange(0, N-1):
-#         for j in np.arange(0, N-1):
-#             if i % 2 == 0:
-#                 simplices.append([i*N+j, i*N+j+1, (i+1)*N+j])
-#                 simplices.append([(i+1)*N+j, (i+1)*N+j+1, i*N+j+1])
-#             elif i % 2 != 0:
-#                 simplices.append([i*N+j, (i+1)*N+j, (i+1)*N+j+1])
-#                 simplices.append([i*N+j, i*N+j+1, (i+1)*N+j+1])
-#     ctr.edges = np.array(edges)
-#     ctr.simplices = np.array(simplices)
-#     ctr.ndim = contour.simplices.shape[1]-1
-#     return contour
 
 def _rotate(contour, pivot, angle):
     assert np.isreal(angle), "Angle to rotate should be real."

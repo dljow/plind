@@ -32,7 +32,7 @@ class integratedTestplmodel(unittest.TestCase):
       #print(cont.points)
       #print(cont.edges)
       cont = equilateral_real(50, (-1,1,-1,1))
-      model = plmodel(cont, func, grad=gradh, expargs=[1])
+      model = plmodel(cont, func, gradh, expargs=[1])
       model.descend(dt, Nstep, delta,-4)
       traj = model.trajectory
       final_cont= model.contour.points
@@ -41,7 +41,7 @@ class integratedTestplmodel(unittest.TestCase):
           self.assertTrue(abs(point[0].real-point[0].imag) < distTOL)
           self.assertTrue(abs(point[1].real-point[1].imag) < distTOL)
 
-      
+
 
    def test_gaussian_2D_integral(self):
    # Integrates the gaussian function over the real line
@@ -54,7 +54,7 @@ class integratedTestplmodel(unittest.TestCase):
       func = lambda x: (1/2)*(x[0]**2+x[1]**2)
       cont = contour()
       cont.init_contour(np.transpose([w,x]))
-      model = plmodel(cont, func, grad=gradh)
+      model = plmodel(cont, func, gradh)
       model.descend(dt, Nstep, delta,-5)
       model.integrate()
 
@@ -68,4 +68,3 @@ class integratedTestplmodel(unittest.TestCase):
 
 if __name__ == '__main__':
         unittest.main()
-

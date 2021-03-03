@@ -25,49 +25,49 @@ class plmodel:
         contour: plind.contour.core.contour
             The current contour along which the integration is defined. See the documentation in
             plind.contour for more information.
-            
+
         expfun: function
             The function in the exponential of the oscillatory integrand. E.g. if the integrand
             is of the form exp(iS), then expfun = iS. expfun should take as its first argument a
             complex vector, z, in C^ndim (that is z is an ndarray<complex> of length ndim). It may take
             any number of additional arguments: expfun(z, *expargs).
-            
+
         grad: function
             The complex gradient of the Morse function, h = Real(iS). That is grad = dh/dz. The
             gradient is required to determine the direction in which to deform the contour. The
             arguments of grad should be the same as the arguments as expfun: grad(z, *expargs).
-            
+
         expargs: array_like
             Additional arguments to be passed to expfun and grad
-            
+
         ndim: int
             The dimension of the complex space, i.e. C^ndim.
-            
+
         trajectory: array<plind.contour.core.contour>
             A list of contours. When plmodel.descend() is called, the contour at each time step is
             appended to trajectory so that the deformation history of the contour is tracked.
-            
+
         integral: Tuple, (float, float)
             integral(0) The value of the integral. Default is None. When plmodel.integrate(), integral is updated
             to be the value of the integral at the current contour.
-            
+
             integral(1) An error estimate for the integral. See plmodel.integrate()
-            
+
         dt: float
-            The time step of the last run of the contour deformation. 
-            Set and stored after a plmodel.descend() call, initialized as None. 
-            
+            The time step of the last run of the contour deformation.
+            Set and stored after a plmodel.descend() call, initialized as None.
+
         delta: float
             The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other.
-            Set and stored after a plmodel.descend() call, initialized as None. 
-            
+            Set and stored after a plmodel.descend() call, initialized as None.
+
         thresh: float
-            The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or 
-            equivalently if e^(h(x)) < e^(thresh). Set and stored after a plmodel.descend() call, initialized as None. 
+            The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or
+            equivalently if e^(h(x)) < e^(thresh). Set and stored after a plmodel.descend() call, initialized as None.
 
     """
 
-    def __init__(self, contour, expfun, grad=None, expargs=[]):
+    def __init__(self, contour, expfun, grad, expargs=[]):
         self.contour = contour
         self.expfun = expfun
         self.grad = grad
@@ -134,15 +134,15 @@ class plmodel:
         Parameters
         ----------
             delta: float
-                The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other. Must                   be set for every run of descend(). Stored as an attribute of the plmodel object. 
-                
+                The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other. Must                   be set for every run of descend(). Stored as an attribute of the plmodel object.
+
             thresh: float
-                The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or 
-                equivalently if e^(h(x)) < e^(thresh). Must be set for every run of descend(). Stored as an attribute of the                     plmodel object. 
-                
+                The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or
+                equivalently if e^(h(x)) < e^(thresh). Must be set for every run of descend(). Stored as an attribute of the                     plmodel object.
+
             tmax: float
                 The time to integrate the flow equation to.
-                
+
             dt_init: float
                 The initial time step for the deformation. For non-adaptive timestep methods, dt is dt_init at all time during the flow, and total number of steps is celing(tmax/dt_init).
             verbose: bool
@@ -182,7 +182,7 @@ class plmodel:
             t += dt
             i += 1
         Nstep = i
-        
+
         # Store descend parameters from the last run of descend()
         self.dt = dt
         self.thresh = thresh
@@ -192,11 +192,11 @@ class plmodel:
 
 
     def integrate(self, intfun=None):
-        """Perform contour integration along the current contour. Defaults to a Grundmann-Moeller 
+        """Perform contour integration along the current contour. Defaults to a Grundmann-Moeller
         Integration scheme, with errors reported from both the integration scheme and the threshold
-        for discarding points. 
-        
-        To retrieve the result, call plmodel.integral. 
+        for discarding points.
+
+        To retrieve the result, call plmodel.integral.
 
         Parameters
         ----------
