@@ -160,8 +160,8 @@ class plmodel:
             dt = min(dt, tmax-dt)
 
             # perform stepping
-            self.contour.points, dt = flow(self.contour.points, gradh, dt, expargs=self.expargs)  # perform pushing
-
+            new_points, dt = flow(self.contour.points.T, gradh, dt, expargs=self.expargs)  # perform pushing
+            self.contour.points = new_points.T
             # remove points from the contour for which self.h evaluated at those points
             # is below the threshold
             if self.ndim == 1:
