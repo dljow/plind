@@ -178,10 +178,14 @@ class contour:
         """
         #bad_edge_ind = np.unique(np.array(np.where(np.isin(self.edges, bad_point_ind)))[0])
         bad_simp_ind = np.unique(np.array(np.where(np.isin(self.simplices, bad_point_ind)))[0])
+        
         # remove bad edges and simplices
         self.points = np.delete(self.points, bad_point_ind, axis=0)
         self.edges = np.delete(self.edges, bad_simp_ind, axis=0)
         self.simplices = np.delete(self.simplices, bad_simp_ind, axis=0)
+        if (len(self.edges) == 0): 
+            raise RuntimeError("All domain edges removed. Try setting your threshold to a lower value.")
+        
         # Set the indices of the points accordingly
         self.edges = self.rm_reindex(self.edges, bad_point_ind)
         self.simplices = self.rm_reindex(self.simplices, bad_point_ind)
