@@ -146,7 +146,7 @@ class contour:
 
         """
         # make a set for speed purposes
-        bad_point_ind_set = set(bad_point_ind)
+        bad_point_ind_set = np.unique(bad_point_ind)
         amount_to_subtract = []
         counter = 0
 

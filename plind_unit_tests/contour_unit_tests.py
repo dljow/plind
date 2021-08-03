@@ -24,7 +24,7 @@ import sys
 sys.path.append("..")
 
 import unittest
-from core import *
+from plind.contour import *
 import numpy as np
 
 
@@ -43,21 +43,24 @@ class TestContour(unittest.TestCase):
      self.assertTrue(np.shape(test_contour.edges), [2,5])
 
   def test_get_edgelengths(self):
-  # Tests the edgelength function 
+  # Tests that the edge length function 
+  # properly returns the simplex edge lengths. 
     test_contour.init_contour(points)
 
     lengths = test_contour.get_edgelengths()
-    true_lengths= np.array([1,1,1,1,np.sqrt(2)])
-    self.assertTrue(set(true_lengths)== set(lengths))
+    lengths = np.ndarray.flatten(lengths)
+    true_lengths= [1.,1.,1.,1.,np.sqrt(2), np.sqrt(2)] # shared edge will appear twice
+                                                       # since list is given by simplex
+    self.assertTrue(sorted(true_lengths)== sorted(lengths.tolist()))
 
-  def test_split_edges(self):
+  def test_refine_edges(self):
     # Tests if bad edges are appropriately split
     bad_edges =np.array([[0,3]]) # diagonal edge in block
 
     test_contour.init_contour(points)
     index=np.where(test_contour.get_edgelengths() > 1)
   
-    test_contour.split_edges(bad_edges, index)
+    test_contour.refine_edges(bad_edges, index)
     new_points = test_contour.points.tolist()
     new_edges = test_contour.edges.tolist()
     new_simplices= test_contour.simplices.tolist()
@@ -77,9 +80,10 @@ class TestContour(unittest.TestCase):
 
   def test_remove_points(self):
   # Tests removal of points
-    bad_point= 0
+    bad_point_index= [0]
+    bad_point =[0,0]
     test_contour.init_contour(points)
-    test_contour.remove_points([bad_point])
+    test_contour.remove_points([bad_point_index])
     new_points = test_contour.points.tolist()
     new_edges = test_contour.edges.tolist()
     new_simplices= test_contour.simplices.tolist()
