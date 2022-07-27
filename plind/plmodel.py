@@ -213,13 +213,16 @@ class plmodel:
         integral, gm_err = conintegrate(self.intfun, self.contour, args=self.expargs)
 
         # Estimate error from having too large a value for thresh
-        if self.thresh >= -20:
-            self.descend(self.delta, 10*self.thresh, 2*self.dt, self.dt, verbose=False)
-            integral1 = conintegrate(self.intfun, self.contour, args=self.expargs)[0]
-            thresh_err = 2*np.abs(integral-integral1)
+        if self.thresh is not None:
+            if self.thresh >= -20:
+                self.descend(self.delta, 10*self.thresh, 2*self.dt, self.dt, verbose=False)
+                integral1 = conintegrate(self.intfun, self.contour, args=self.expargs)[0]
+                thresh_err = 2*np.abs(integral-integral1)
 
-            # Add the errors from the threshold and the error from the degree of integration together
-            self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
+                # Add the errors from the threshold and the error from the degree of integration together
+                self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
+            else:
+                pass
         else:
             self.integral = (integral, gm_err)
 
