@@ -222,7 +222,9 @@ class plmodel:
                 # Add the errors from the threshold and the error from the degree of integration together
                 self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
             else:
-                pass
+                # were we doing something here?
+                self.integral = (integral, gm_err)
+                # pass
         else:
             self.integral = (integral, gm_err)
 
