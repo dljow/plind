@@ -10,7 +10,7 @@ setuptools.setup(
     description="Picard-Lefschetz integrator for highly oscillatory functions",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(where='src'),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
@@ -18,6 +18,6 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     py_modules=["plind"],
-    package_dir={'':'plind'},
+    package_dir={'':'src'},
     install_requires=['numpy','scipy','matplotlib']
 )
