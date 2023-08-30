@@ -5,7 +5,7 @@
 # and underpopulate the critical points
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import unittest
 from plind.plmodel import *

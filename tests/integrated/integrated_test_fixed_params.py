@@ -3,7 +3,7 @@
 # A generic integrated
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import unittest
 from plind.plmodel import *

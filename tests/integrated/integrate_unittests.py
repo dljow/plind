@@ -4,7 +4,7 @@
 # of the Picard Lefshetz module. 
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import unittest
 from plind.integrate.core import *

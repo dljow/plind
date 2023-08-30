@@ -5,7 +5,7 @@
 # the integral from giving the correct answer. 
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import unittest
 from plind.plmodel import *

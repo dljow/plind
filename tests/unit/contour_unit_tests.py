@@ -30,7 +30,7 @@
 # being properly indexed
 
 import sys
-sys.path.append("..")
+sys.path.append("../..")
 
 import unittest
 from plind.contour import *
