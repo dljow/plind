@@ -8,8 +8,6 @@ from .visualize import *
 from .descend import *
 from .contour import *
 
-from matplotlib.animation import FuncAnimation
-
 
 
 class plmodel:
