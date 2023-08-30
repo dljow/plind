@@ -2,9 +2,6 @@
 #
 # A generic integrated
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.plmodel import *
 from plind.contour_dict import equilateral_real, realcontour_nd, realcontour_1D

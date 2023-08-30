@@ -4,9 +4,6 @@
 # does not overpopulate points at infinity
 # and underpopulate the critical points
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.plmodel import *
 import pl_testfunctions as plfun

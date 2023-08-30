@@ -1,7 +1,4 @@
-# Integrated tests for picard lefshetz
-
-import sys
-sys.path.append("../..")
+# Integrated tests for picard lefschetz
 
 import unittest
 from plind.plmodel import *

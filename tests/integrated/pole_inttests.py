@@ -4,9 +4,6 @@
 # excising poles from integrals does not prevent
 # the integral from giving the correct answer. 
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.plmodel import *
 from plind.plexception.plexception import *

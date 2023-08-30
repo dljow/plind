@@ -3,9 +3,6 @@
 # Test Suite for the conintegrate function
 # of the Picard Lefshetz module. 
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.integrate.core import *
 from plind.interpolate.core import *

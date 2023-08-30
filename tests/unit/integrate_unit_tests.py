@@ -8,9 +8,6 @@
 # pressing. 
 #
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.integrate import conintegrate
 import numpy as np

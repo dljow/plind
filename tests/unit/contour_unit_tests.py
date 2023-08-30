@@ -29,9 +29,6 @@
 # I make no guarantee of the edges/simplices 
 # being properly indexed
 
-import sys
-sys.path.append("../..")
-
 import unittest
 from plind.contour import *
 import numpy as np

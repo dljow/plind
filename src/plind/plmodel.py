@@ -221,8 +221,8 @@ class plmodel:
                 self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
             else:
                 pass
-        else:
-            self.integral = (integral, gm_err)
+        
+        self.integral = (integral, gm_err)
 
     def visualize(self, *args, **kwargs):
         """Plots the contour at the specified step in the evolution.

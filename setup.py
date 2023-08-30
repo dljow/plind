@@ -19,5 +19,5 @@ setuptools.setup(
     python_requires='>=3.6',
     py_modules=["plind"],
     package_dir={'':'src'},
-    install_requires=['numpy','scipy','matplotlib']
+    install_requires=['numpy','scipy','matplotlib','sympy']
 )
