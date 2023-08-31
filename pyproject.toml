@@ -1,0 +1,33 @@
+[project]
+name = "plind"
+version = "0.1.0"
+description = "Picard-Lefschetz Integrator in N-Dimensions for highly oscillatory functions"
+authors = [
+  { name = "Dylan Jow", email = "djow@physics.utoronto.ca" },
+  { name = "Fang Xi Lin", email = "hi@fxl.ai" },
+  { name = "Emily Tyhurst", email = "tyhurste@gmail.com" }
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: OS Independent"
+]
+requires-python = ">=3.8"
+dependencies = [
+  "numpy >= 1.0",
+  "scipy >= 1.0",
+  "matplotlib >= 3.0",
+  "sympy >= 1.0"
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.urls]
+repository = "https://github.com/dljow/plind"
+
+[tool.setuptools.packages]
+find = {}
