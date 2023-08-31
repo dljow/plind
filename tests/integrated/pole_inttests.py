@@ -53,7 +53,7 @@ class TestPoleFlagging(unittest.TestCase):
             expfun = lambda x: 1j*(1/(1+x))
             contour = np.linspace(-10, 10, 21)
             print(contour)
-            model = plmodel(contour, expfun)
+            model = PLModel(contour, expfun)
             try:
                 model.integrate()
                 ans=model.get_integral()
@@ -66,7 +66,7 @@ class TestPoleFlagging(unittest.TestCase):
         # Tests that x^2/2 +1/(1+x^2) is properly flagged 
             expfun= lambda x: x**2/2+(1/(1+x**2))
             contour= np.linspace(-10,-10, 20)
-            model=plmodel(contour, expfun)
+            model=PLModel(contour, expfun)
             try:
                 model.descend(0, 0.61)
                 model.integrate()

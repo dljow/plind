@@ -10,10 +10,10 @@ from .contour import *
 
 
 
-class plmodel:
+class PLModel:
     """Perform Picard-Lefschetz integration for a given oscillatory integrand and initial contour in C^ndim.
 
-    A plmodel object takes an oscillatory integrand of the form exp(iS) and an initial contour, and has
+    A PLModel object takes an oscillatory integrand of the form exp(iS) and an initial contour, and has
     methods to deform the initial contour according towards the Lefschetz thimbles (contours along which
     the integral is no longer oscillatory). Plmodel also has methods to then integrate the integrand
     over the deformed contour.
@@ -42,26 +42,26 @@ class plmodel:
             The dimension of the complex space, i.e. C^ndim.
 
         trajectory: array<plind.contour.core.contour>
-            A list of contours. When plmodel.descend() is called, the contour at each time step is
+            A list of contours. When PLModel.descend() is called, the contour at each time step is
             appended to trajectory so that the deformation history of the contour is tracked.
 
         integral: Tuple, (float, float)
-            integral(0) The value of the integral. Default is None. When plmodel.integrate(), integral is updated
+            integral(0) The value of the integral. Default is None. When PLModel.integrate(), integral is updated
             to be the value of the integral at the current contour.
 
-            integral(1) An error estimate for the integral. See plmodel.integrate()
+            integral(1) An error estimate for the integral. See PLModel.integrate()
 
         dt: float
             The time step of the last run of the contour deformation.
-            Set and stored after a plmodel.descend() call, initialized as None.
+            Set and stored after a PLModel.descend() call, initialized as None.
 
         delta: float
             The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other.
-            Set and stored after a plmodel.descend() call, initialized as None.
+            Set and stored after a PLModel.descend() call, initialized as None.
 
         thresh: float
             The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or
-            equivalently if e^(h(x)) < e^(thresh). Set and stored after a plmodel.descend() call, initialized as None.
+            equivalently if e^(h(x)) < e^(thresh). Set and stored after a PLModel.descend() call, initialized as None.
 
     """
 
@@ -76,7 +76,7 @@ class plmodel:
         self.trajectory = np.array([copy(contour)])
         self.integral = None
 
-        # Parameters used in last plmodel.descend() call
+        # Parameters used in last PLModel.descend() call
 
         self.dt = None
         self.delta = None
@@ -125,18 +125,18 @@ class plmodel:
     def descend(self, delta, thresh, tmax, dt_init, verbose=True):
         """Deform the contour according to the Picard-Lefschetz rule (flow the points along the gradient of the Morse function).
 
-        Upon calling plmodel.descend(), the contour is deformed along the gradient of the Morse function with an adaptive mesh
-        algorithm to prevent points in the contour from becoming too sparse. At each time step, plmodel.contour is updated to
-        be the current contour, and the current contour is appended to plmodel.trajectory.
+        Upon calling PLModel.descend(), the contour is deformed along the gradient of the Morse function with an adaptive mesh
+        algorithm to prevent points in the contour from becoming too sparse. At each time step, PLModel.contour is updated to
+        be the current contour, and the current contour is appended to PLModel.trajectory.
 
         Parameters
         ----------
             delta: float
-                The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other. Must                   be set for every run of descend(). Stored as an attribute of the plmodel object.
+                The maximum Euclidean distance points joined by an edge in the contour are allowed to be from each other. Must                   be set for every run of descend(). Stored as an attribute of the PLModel object.
 
             thresh: float
                 The exponential threshold for the points counted for integration. A point x is discarded if (h(x) < thresh), or
-                equivalently if e^(h(x)) < e^(thresh). Must be set for every run of descend(). Stored as an attribute of the                     plmodel object.
+                equivalently if e^(h(x)) < e^(thresh). Must be set for every run of descend(). Stored as an attribute of the                     PLModel object.
 
             tmax: float
                 The time to integrate the flow equation to.
@@ -194,13 +194,13 @@ class plmodel:
         Integration scheme, with errors reported from both the integration scheme and the threshold
         for discarding points.
 
-        To retrieve the result, call plmodel.integral.
+        To retrieve the result, call PLModel.integral.
 
         Parameters
         ----------
             intfun: function, optional
                 Function of the form intfun(z, *self.expargs) to integrate over. If None is given,
-                then intfun = plmodel.get_intfun(). The default is None.
+                then intfun = PLModel.get_intfun(). The default is None.
 
         """
         if intfun is None:
@@ -227,7 +227,7 @@ class plmodel:
     def visualize(self, *args, **kwargs):
         """Plots the contour at the specified step in the evolution.
 
-        plmodel.visualize() generates a plot of the final contour. Right now, it
+        PLModel.visualize() generates a plot of the final contour. Right now, it
         only supports a 1D visualization.
 
         Parameters

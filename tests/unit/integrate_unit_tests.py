@@ -11,7 +11,7 @@
 import unittest
 from plind.integrate import conintegrate
 import numpy as np
-from plind.contour_dict import realcontour_nd, realcontour_1D
+from plind.contour_dict import real_contour_nd, real_contour_1d
 
 NMAX = 5 # Test up to this dimension for generic ND test cases. 
 TOL2D = 10**-7 # Numerical integration error 
@@ -23,14 +23,14 @@ class TestIntegrate(unittest.TestCase):
     """Test the numerical integration of sin(x)+sin(y) 
        over [[-2pi, 2pi], [-2pi, 2pi]]""" 
     
-    contour = realcontour_nd(30, (-2*np.pi,2*np.pi,-2*np.pi,2*np.pi))
+    contour = real_contour_nd(30, (-2*np.pi,2*np.pi,-2*np.pi,2*np.pi))
     integral = conintegrate(lambda xvec: np.sin(xvec[0])+np.sin(xvec[1]), contour) 
     self.assertTrue(integral[0] < TOL2D)
     
   def test_real_fn_3D(self):
     """Test the numerical integration of sin(x)+sin(y)+cos(z) 
      over [[-2pi, 2pi], [-2pi, 2pi], [-2pi, 2pi]]""" 
-    contour = realcontour_nd(15, (-2*np.pi,2*np.pi,-2*np.pi,2*np.pi, -2*np.pi,2*np.pi))
+    contour = real_contour_nd(15, (-2*np.pi,2*np.pi,-2*np.pi,2*np.pi, -2*np.pi,2*np.pi))
     integral = conintegrate(lambda xvec: np.sin(xvec[0])+np.sin(xvec[1])+np.cos(xvec[2]), contour) 
     self.assertTrue(integral[0] < TOL3D)
     

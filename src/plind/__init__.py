@@ -1,2 +1,2 @@
-# this allows you to do `from plind import plmodel`
-from plind.plmodel import plmodel
+# this allows you to do `from plind import PLModel`
+from plind.plmodel import PLModel

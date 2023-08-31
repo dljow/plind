@@ -4,7 +4,7 @@
 
 import unittest
 from plind.plmodel import *
-from plind.contour_dict import equilateral_real, realcontour_nd, realcontour_1D
+from plind.contour_dict import equilateral_real, real_contour_nd, real_contour_1d
 from plind.plexception.plexception import *
 import gaussian as gauss
 import itertools
@@ -30,8 +30,8 @@ def setup_descend(testfunction, contour, parameters):
         
         Returns
         -------
-            plind: plind.plmodel Object
-                 A plmodel object with the gradient flow desended
+            plind: plind.PLModel Object
+                 A PLModel object with the gradient flow desended
                  by the timesteps provided by dict. 
                 
         See Also
@@ -41,7 +41,7 @@ def setup_descend(testfunction, contour, parameters):
         
         """    
     
-    plind = plmodel(contour, testfunction.expfun, grad=testfunction.gradh, expargs=testfunction.expargs)
+    plind = PLModel(contour, testfunction.expfun, grad=testfunction.gradh, expargs=testfunction.expargs)
     plind.descend(parameters["delta"], parameters["thresh"], parameters["tmax"], parameters["dt_init"])
     return plind
 
@@ -75,7 +75,7 @@ class FixedParamsPlindTest(unittest.TestCase):
         "thresh": self.THRESH,
         "tmax": self.TMAX
         }
-        contour = realcontour_1D(10, (-1.5,1.5))
+        contour = real_contour_1d(10, (-1.5,1.5))
         
         plind = setup_descend(gauss_fn, contour, param_dict)
         
@@ -94,7 +94,7 @@ class FixedParamsPlindTest(unittest.TestCase):
         "thresh": self.THRESH,
         "tmax": self.TMAX
         }
-        contour = realcontour_1D(10, (-1.5,1.5))
+        contour = real_contour_1d(10, (-1.5,1.5))
         
         plind = setup_descend(gauss_fn, contour, param_dict)
         
@@ -114,7 +114,7 @@ class FixedParamsPlindTest(unittest.TestCase):
         "thresh": self.THRESH,
         "tmax": self.TMAX
         }
-        contour = realcontour_1D(10, (-1.5,1.5))
+        contour = real_contour_1d(10, (-1.5,1.5))
         
         plind = setup_integrate(gauss_fn, contour, param_dict)
         #print(plind.integral[1])
@@ -134,7 +134,7 @@ class FixedParamsPlindTest(unittest.TestCase):
         for n in [2,3]:
             gauss_fn = gauss.Gaussian(n)
             domain = tuple(np.ndarray.flatten(np.transpose(np.reshape(np.repeat((-1.5, 1.5), n), [2,n]))))
-            contour = realcontour_nd(10, domain)
+            contour = real_contour_nd(10, domain)
         
             plind = setup_descend(gauss_fn, contour, param_dict)
         

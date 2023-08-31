@@ -50,7 +50,7 @@ class TestInftyPts(unittest.TestCase):
         def test_domainconverge(self):
         # Tests that the trajectory of the gradient flow remains roughly constant after an increase to 10000 iterates
            domain= np.linspace(-10,10, 100)
-           domain_model = plmodel(domain, expfun, gradh, expargs=[lamb])
+           domain_model = PLModel(domain, expfun, gradh, expargs=[lamb])
            step_range= np.linspace(minstep, maxstep, 10)
            domain_model.descend(0, minstep-100)
            last_contour= domain_model.get_contour()
@@ -69,7 +69,7 @@ class TestInftyPts(unittest.TestCase):
         def test_critpt_pop(self):
         # Tests that the contour remains well-populated amoung critical points
            domain= np.linspace(-10,10, 100)
-           domain_model = plmodel(domain, expfun, gradh, expargs=[lamb])
+           domain_model = PLModel(domain, expfun, gradh, expargs=[lamb])
            domain_model.descend(0, minstep)
 
            line = domain_model.contour

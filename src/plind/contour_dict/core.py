@@ -5,7 +5,7 @@ import itertools
 
 # returns contour for a Delaunay triangulation of Rn
 
-def realcontour_nd(N, domain, rotation=0.):
+def real_contour_nd(N, domain, rotation=0.):
     """Initialize a contour object over R^ndim based on the domain given, with N points along
        each edge.
 
@@ -56,7 +56,7 @@ def realcontour_nd(N, domain, rotation=0.):
 
 
 # returns regular grid for R1
-def realcontour_1D(N, domain):
+def real_contour_1d(N, domain):
     points = np.linspace(domain[0], domain[1], N)
     simplices = np.array([[j, j+1] for j in np.arange(0, len(points)-1)])
     points = np.reshape(points, [N, 1])

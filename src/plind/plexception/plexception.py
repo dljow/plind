@@ -1,4 +1,4 @@
-# Contains flaggable exceptions for plmodel.py
+# Contains flaggable exceptions for PLModel.py
 
 
 class DescendError(Exception):

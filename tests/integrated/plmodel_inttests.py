@@ -29,7 +29,7 @@ class integratedTestplmodel(unittest.TestCase):
       #print(cont.points)
       #print(cont.edges)
       cont = equilateral_real(50, (-1,1,-1,1))
-      model = plmodel(cont, func, gradh, expargs=[1])
+      model = PLModel(cont, func, gradh, expargs=[1])
       model.descend(dt, Nstep, delta,-4)
       traj = model.trajectory
       final_cont= model.contour.points
@@ -51,7 +51,7 @@ class integratedTestplmodel(unittest.TestCase):
       func = lambda x: (1/2)*(x[0]**2+x[1]**2)
       cont = contour()
       cont.init_contour(np.transpose([w,x]))
-      model = plmodel(cont, func, gradh)
+      model = PLModel(cont, func, gradh)
       model.descend(dt, Nstep, delta,-5)
       model.integrate()
 
