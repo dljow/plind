@@ -1,7 +1,7 @@
 # plind.py Documentation
 
 ## Introduction
-plind.py (Picard-Lefschetz Integrator in N-Dimensions) is a Python package that implements the Picard-Lefschetz method for integrating highly oscillatory functions in any number of dimensions. 
+plind.py (Picard-Lefschetz Integration in N-Dimensions) is a Python package that implements the Picard-Lefschetz method for integrating highly oscillatory functions in any number of dimensions. 
 
 ## Description
 This code is for people interested in computing integrals of the form

@@ -1,7 +1,7 @@
 [project]
 name = "plind"
 version = "0.1.0"
-description = "Picard-Lefschetz Integrator in N-Dimensions for highly oscillatory functions"
+description = "Picard-Lefschetz Integration in N-Dimensions for highly oscillatory functions"
 authors = [
   { name = "Dylan Jow", email = "djow@physics.utoronto.ca" },
   { name = "Fang Xi Lin", email = "hi@fxl.ai" },
