@@ -220,9 +220,11 @@ class PLModel:
                 # Add the errors from the threshold and the error from the degree of integration together
                 self.integral = (integral, np.sqrt(thresh_err**2 + gm_err**2))
             else:
-                pass
-        
-        self.integral = (integral, gm_err)
+                # were we doing something here?
+                self.integral = (integral, gm_err)
+                # pass
+        else:
+            self.integral = (integral, gm_err)
 
     def visualize(self, *args, **kwargs):
         """Plots the contour at the specified step in the evolution.
