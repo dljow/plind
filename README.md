@@ -8,8 +8,10 @@ This code is for people interested in computing integrals of the form
 $$I=\int_\Omega \text{d}^n\mathbf{x}\exp i S(\mathbf{x}\;\mathbf{\mu}).$$ 
 These integrals occur in quantum theory and wave optics. 
 Such integrals are not possible to do using traditional numerical methods due to their highly oscillatory nature. 
+
 However, Picard-Lefschetz (PL) theory gives a recipe for computing them by analytically continuing the integration domain to $\mathbb{C}^n$, deforming the integration domain according to certain rules, then integrating on the new domain. 
 This package is an implementation of the PL algorithm in Python. 
+
 For details, see papers in the [additional information](#additional-information) section. 
 
 ## Installation
