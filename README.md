@@ -1,13 +1,18 @@
 # plind.py Documentation
 
 ## Introduction
-plind.py (Picard-Lefschetz Integrator in N-Dimensions) is a Python package that implements the Picard-Lefshetz method for integrating highly oscillatory functions in any number of dimensions. 
+plind.py (Picard-Lefschetz Integrator in N-Dimensions) is a Python package that implements the Picard-Lefschetz method for integrating highly oscillatory functions in any number of dimensions. 
+
+## Description
+This code is for people interested in computing integrals of the form
+$$I=\int_\Omega \text{d}^n\mathbf{x}\,\exp\left[i\,S(\mathbf{x};\mathbf{\mu}\right]$$. 
+Such integrals are difficult to do using traditional numerical methods due to their highly oscillatory nature. However, Picard-Lefschetz theory gives a recipe doing these integrals numerically by analytically continuing the integration domain to $\mathbb{C}^n$, deforming the integration domain according to certain rules, then integrating on the new domain. For details, see papers in the [additional information](#additional-information) section. 
 
 ## Installation
 To use plind.py, run `pip install plind`.
 
 ## Usage
-To use the code, follow the examples in `Example Notebook.ipynb`.
+To use the code, follow the examples in `Example Notebook.ipynb`. 
 
 ## Additional Information
 For more information on the code and its usage, refer to the docstrings and comments within the code files, or email the authors. See also [arXiv:2103.08687](https://arxiv.org/abs/2103.08687) and [arXiv:1909.04632](https://arxiv.org/abs/1909.04632) for details on the method.
