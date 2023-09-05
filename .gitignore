@@ -1,6 +1,9 @@
 # python notebook
 fxdev.ipynb
+
+# other stuff
 chromadb/
+python_load.sh
 
 # mac stuff
 .DS_Store
