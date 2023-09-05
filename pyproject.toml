@@ -1,6 +1,6 @@
 [project]
 name = "plind"
-version = "0.1.0"
+version = "0.1.1"
 description = "Picard-Lefschetz Integration in N-Dimensions for highly oscillatory functions"
 authors = [
   { name = "Dylan Jow", email = "djow@physics.utoronto.ca" },
@@ -28,6 +28,3 @@ build-backend = "setuptools.build_meta"
 
 [project.urls]
 repository = "https://github.com/dljow/plind"
-
-[tool.setuptools.packages]
-find = {}
