@@ -2,6 +2,7 @@
 fxdev.ipynb
 
 # other stuff
+.vscode
 chromadb/
 python_load.sh
 
