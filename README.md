@@ -24,4 +24,4 @@ To use the code, follow the examples in `Example Notebook.ipynb`.
 For more information on the code and its usage, refer to the docstrings and comments within the code files, or email the authors. See also [arXiv:2103.08687](https://arxiv.org/abs/2103.08687) and [arXiv:1909.04632](https://arxiv.org/abs/1909.04632) for details on the method.
 
 ## Citation
-Please cite [arXiv:2103.08687](https://arxiv.org/abs/2103.08687) if you use this code in your project.
+Please cite [doi:10.1093/mnras/stab2337](https://doi.org/10.1093/mnras/stab2337) if you use this code in your project.
